@@ -1,4 +1,4 @@
-﻿# Evanade Challenge - Microservices Inventory & Sales
+﻿# Avanade Challenge - Microservices Inventory & Sales
 
 Bem-vindo ao projeto **Evanade Challenge**! Este repositório reúne dois microsserviços principais para gestão de inventário e vendas, prontos para rodar em ambiente Docker.
 
