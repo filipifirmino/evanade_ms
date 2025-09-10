@@ -5,15 +5,18 @@ services:
     container_name: sqlserver
     environment:
       - ACCEPT_EULA=Y
-      - SA_PASSWORD=teste123
+      - SA_PASSWORD=Teste123!
     ports:
       - "1433:1433"
     restart: unless-stopped
+    volumes:
+      - sqlserver_data:/var/opt/mssql
     healthcheck:
-      test: ["CMD-SHELL", "sqlcmd -S localhost -U SA -P teste123 -Q 'SELECT 1' || exit 1"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+      test: ["CMD-SHELL", "sqlcmd -S localhost -U SA -P Teste123! -Q 'SELECT 1'"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
   rabbitmq:
     image: rabbitmq:3-management
     container_name: rabbitmq
@@ -21,3 +24,6 @@ services:
       - "5672:5672"
       - "15672:15672"
     restart: unless-stopped
+
+volumes:
+  sqlserver_data:
