@@ -16,4 +16,13 @@
       <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.8-rc.2.24473.5" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Migrations\" />
+      <Folder Include="Repositories\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Inventory.Application\Inventory.Application.csproj" />
+    </ItemGroup>
+
 </Project>

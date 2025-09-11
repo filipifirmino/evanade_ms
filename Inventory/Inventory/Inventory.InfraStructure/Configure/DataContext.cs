@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Inventory.InfraStructure.Entitys;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
 namespace Inventory.InfraStructure.Configure;
@@ -13,12 +14,24 @@ public class DataContext : DbContext
         _configuration = configuration;
     }
   
-    // Define your DbSets here
-  
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
+   protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-        // Configure your entity mappings here
+    
+        modelBuilder.Entity<ProductEntity>(entity =>
+        {
+            entity.HasKey(e => e.ProductId);
+    
+            entity.Property(e => e.Name)
+                .IsRequired()
+                .HasMaxLength(100);
+    
+            entity.Property(e => e.Price)
+                .HasColumnType("decimal(18,2)");
+    
+            entity.HasIndex(e => e.Name);
+            entity.HasIndex(e => e.Price);
+        });
     }
   
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
