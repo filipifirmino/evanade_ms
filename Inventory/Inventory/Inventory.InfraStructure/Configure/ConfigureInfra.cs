@@ -1,17 +1,22 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Inventory.Application.AbstractionsGateways;
+using Inventory.InfraStructure.Gateways;
+using Inventory.InfraStructure.Repositories;
+using Inventory.InfraStructure.Repositories.Abstractions;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Inventory.InfraStructure.Configure;
 
 public static class ConfigureInfra
 {
-    public static void AddGateway(this IServiceCollection services)
+    private static void AddGateway(this IServiceCollection services)
     {
-        // Add gateway services here
+        services.AddScoped<IProductGateway, ProductGateway>();
     }
 
-    public static void AddRepository(this IServiceCollection services)
+    private static void AddRepository(this IServiceCollection services)
     {
-        //Add repository services here
+        services.AddScoped(typeof(IRepositoryBase<>), typeof(RepositoreBase<>));
+        services.AddScoped<IProductRepository, ProductRepository>();
     }
 
     public static void  AddConfigureInfra(this IServiceCollection services)
