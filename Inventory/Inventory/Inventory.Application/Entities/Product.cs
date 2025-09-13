@@ -18,12 +18,7 @@ public class Product
         Price = price;
         StockQuantity = stockQuantity;
     }
-
-    public Product()
-    {
-        
-    }
-
+    
     public void Reserve(int quantity)
     {
         if (quantity <= 0)

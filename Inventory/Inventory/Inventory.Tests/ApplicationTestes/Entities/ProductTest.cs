@@ -1,7 +1,5 @@
-﻿using System;
+﻿using AutoBogus;
 using Inventory.Application.Entities;
-using Xunit;
-
 namespace Inventory.Tests.ApplicationTestes.Entities;
 
 public class ProductTest
@@ -9,24 +7,23 @@ public class ProductTest
     [Fact]
     public void Constructor_WithValidParameters_ShouldCreateProduct()
     {
-        var name = "Produto Teste";
-        var description = "Descrição do produto";
-        var price = 100.50m;
-        var stockQuantity = 10;
+        var productTest = AutoFaker.Generate<Product>();
 
-        var product = new Product(name, description, price, stockQuantity);
+        var product = productTest;
 
         Assert.NotEqual(Guid.Empty, product.ProductId);
-        Assert.Equal(name, product.Name);
-        Assert.Equal(description, product.Description);
-        Assert.Equal(price, product.Price);
-        Assert.Equal(stockQuantity, product.StockQuantity);
+        Assert.Equal(product.Name, product.Name);
+        Assert.Equal(product.Description, product.Description);
+        Assert.Equal(product.Price, product.Price);
+        Assert.Equal(product.StockQuantity, product.StockQuantity);
     }
 
     [Fact]
     public void Reserve_WithValidQuantity_ShouldDecreaseStock()
     {
-        var product = new Product("Produto", "Descrição", 100m, 10);
+        var product = new AutoFaker<Product>()
+            .RuleFor(p => p.StockQuantity, 10)
+            .Generate();
         var quantityToReserve = 3;
 
         product.Reserve(quantityToReserve);
@@ -40,7 +37,9 @@ public class ProductTest
     [InlineData(-10)]
     public void Reserve_WithInvalidQuantity_ShouldThrowArgumentException(int invalidQuantity)
     {
-        var product = new Product("Produto", "Descrição", 100m, 10);
+        var product =  new AutoFaker<Product>()
+            .RuleFor(p => p.StockQuantity, 10)
+            .Generate();
 
         var exception = Assert.Throws<ArgumentException>(() => product.Reserve(invalidQuantity));
         Assert.Equal("Quantidade deve ser positiva.", exception.Message);
@@ -49,7 +48,9 @@ public class ProductTest
     [Fact]
     public void Reserve_WithQuantityGreaterThanStock_ShouldThrowInvalidOperationException()
     {
-        var product = new Product("Produto", "Descrição", 100m, 5);
+        var product = new AutoFaker<Product>()
+            .RuleFor(p => p.StockQuantity, 5)
+            .Generate();
         var quantityToReserve = 10;
 
         var exception = Assert.Throws<InvalidOperationException>(() => product.Reserve(quantityToReserve));
@@ -59,7 +60,9 @@ public class ProductTest
     [Fact]
     public void Reserve_WithExactStockQuantity_ShouldSucceed()
     {
-        var product = new Product("Produto", "Descrição", 100m, 5);
+        var product = new AutoFaker<Product>()
+            .RuleFor(p => p.StockQuantity, 5)
+            .Generate();
         var quantityToReserve = 5;
 
         product.Reserve(quantityToReserve);
@@ -70,7 +73,9 @@ public class ProductTest
     [Fact]
     public void Release_WithValidQuantity_ShouldIncreaseStock()
     {
-        var product = new Product("Produto", "Descrição", 100m, 10);
+        var product = new AutoFaker<Product>()
+            .RuleFor(p => p.StockQuantity, 10)
+            .Generate();
         var quantityToRelease = 3;
 
         product.Release(quantityToRelease);
@@ -84,7 +89,9 @@ public class ProductTest
     [InlineData(-10)]
     public void Release_WithInvalidQuantity_ShouldThrowArgumentException(int invalidQuantity)
     {
-        var product = new Product("Produto", "Descrição", 100m, 10);
+        var product = new AutoFaker<Product>()
+            .RuleFor(p => p.StockQuantity, 10)
+            .Generate();
 
         var exception = Assert.Throws<ArgumentException>(() => product.Release(invalidQuantity));
         Assert.Equal("Quantidade deve ser positiva.", exception.Message);
@@ -93,7 +100,9 @@ public class ProductTest
     [Fact]
     public void AddStock_WithValidQuantity_ShouldIncreaseStock()
     {
-        var product = new Product("Produto", "Descrição", 100m, 10);
+        var product = new AutoFaker<Product>()
+            .RuleFor(p => p.StockQuantity, 10)
+            .Generate();
         var quantityToAdd = 5;
 
         product.AddStock(quantityToAdd);
@@ -107,7 +116,9 @@ public class ProductTest
     [InlineData(-10)]
     public void AddStock_WithInvalidQuantity_ShouldThrowArgumentException(int invalidQuantity)
     {
-        var product = new Product("Produto", "Descrição", 100m, 10);
+        var product = new AutoFaker<Product>()
+            .RuleFor(p => p.StockQuantity, 10)
+            .Generate();
 
         var exception = Assert.Throws<ArgumentException>(() => product.AddStock(invalidQuantity));
         Assert.Equal("Quantidade deve ser positiva.", exception.Message);
@@ -116,7 +127,9 @@ public class ProductTest
     [Fact]
     public void SetPrice_WithValidPrice_ShouldUpdatePrice()
     {
-        var product = new Product("Produto", "Descrição", 100m, 10);
+        var product = new AutoFaker<Product>()
+            .RuleFor(p => p.Price, 100m)
+            .Generate();
         var newPrice = 150.75m;
 
         product.SetPrice(newPrice);
@@ -130,7 +143,7 @@ public class ProductTest
     [InlineData(-100)]
     public void SetPrice_WithNegativePrice_ShouldThrowArgumentException(decimal negativePrice)
     {
-        var product = new Product("Produto", "Descrição", 100m, 10);
+        var product = AutoFaker.Generate<Product>();
 
         var exception = Assert.Throws<ArgumentException>(() => product.SetPrice(negativePrice));
         Assert.Equal("Preço não pode ser negativo.", exception.Message);
@@ -139,7 +152,7 @@ public class ProductTest
     [Fact]
     public void SetPrice_WithZeroPrice_ShouldSucceed()
     {
-        var product = new Product("Produto", "Descrição", 100m, 10);
+        var product = AutoFaker.Generate<Product>();
         var zeroPrice = 0m;
 
         product.SetPrice(zeroPrice);
@@ -150,7 +163,7 @@ public class ProductTest
     [Fact]
     public void MultipleOperations_ShouldWorkCorrectly()
     {
-        var product = new Product("Produto", "Descrição", 100m, 20);
+        var product = AutoFaker.Generate<Product>();
 
         product.AddStock(10);
         product.Reserve(5);
