@@ -22,6 +22,22 @@ O projeto segue a **Clean Architecture** com separação clara de responsabilida
 ├── docker-compose.yml          # Orquestração dos containers SQL Server e RabbitMQ
 ```
 
+## 🚀 Funcionalidades Implementadas
+
+### Inventory Microservice
+- **Gestão de Produtos**: CRUD completo para produtos
+- **Controle de Estoque**: Reserva, liberação e adição de estoque
+- **Validações de Negócio**: Regras para quantidade e preços
+- **API REST**: Endpoints para todas as operações
+- **Testes Unitários**: Cobertura completa dos métodos de negócio
+
+### Endpoints da API Inventory
+- `GET /api/v1/Product/all-products` - Listar todos os produtos
+- `GET /api/v1/Product/product-by-id` - Buscar produto por ID
+- `POST /api/v1/Product/create-product` - Criar novo produto
+- `PUT /api/v1/Product/update-product` - Atualizar produto
+- `DELETE /api/v1/Product/remove-product` - Remover produto
+
 ## 🛠️ Tecnologias Utilizadas
 
 ### Backend
@@ -117,7 +133,32 @@ Este projeto implementa os princípios da **Clean Architecture**, garantindo:
 - **Separation of Concerns**: Cada camada tem uma responsabilidade específica
 - **Single Responsibility**: Cada classe tem apenas uma razão para mudar
 
-## 🧪 Executando os Testes
+## 🧪 Testes Unitários
+
+O projeto implementa uma estratégia robusta de testes unitários utilizando **xUnit** e **Microsoft.NET.Test.Sdk**.
+
+### Cobertura de Testes Implementada
+
+#### Product Entity Tests
+- ✅ **Construtor**: Validação de criação com parâmetros válidos
+- ✅ **Reserve()**: Testes para reserva de estoque
+  - Quantidade válida (decrementa estoque)
+  - Quantidade inválida (0, negativa) - lança `ArgumentException`
+  - Quantidade maior que estoque - lança `InvalidOperationException`
+  - Quantidade exata do estoque disponível
+- ✅ **Release()**: Testes para liberação de estoque
+  - Quantidade válida (incrementa estoque)
+  - Quantidade inválida (0, negativa) - lança `ArgumentException`
+- ✅ **AddStock()**: Testes para adição de estoque
+  - Quantidade válida (incrementa estoque)
+  - Quantidade inválida (0, negativa) - lança `ArgumentException`
+- ✅ **SetPrice()**: Testes para definição de preço
+  - Preço válido (atualiza preço)
+  - Preço negativo - lança `ArgumentException`
+  - Preço zero (caso limite)
+- ✅ **Teste de Integração**: Múltiplas operações em sequência
+
+### Executando os Testes
 
 ```bash
 # Executar todos os testes
@@ -126,13 +167,75 @@ dotnet test
 # Executar testes de um projeto específico
 dotnet test Inventory/Inventory/Inventory.Tests/
 dotnet test Sales/Sales/Sales.Tests/
+
+# Executar testes com cobertura de código
+dotnet test --collect:"XPlat Code Coverage"
+
+# Executar testes com output detalhado
+dotnet test --verbosity normal
 ```
 
-## 📚 Documentação da API
+### Estrutura dos Testes
+```
+Inventory.Tests/
+├── ApplicationTestes/
+│   └── Entities/
+│       └── ProductTest.cs    # Testes da entidade Product
+└── Inventory.Tests.csproj    # Configuração do projeto de testes
+```
 
-Após executar as APIs, acesse a documentação Swagger:
-- **Inventory API**: `https://localhost:5001/swagger`
-- **Sales API**: `https://localhost:5003/swagger`
+### Tecnologias de Teste
+- **xUnit 2.9.2** - Framework de testes
+- **Microsoft.NET.Test.Sdk 17.12.0** - SDK de testes
+- **coverlet.collector 6.0.2** - Coleta de cobertura de código
+- **xunit.runner.visualstudio 2.8.2** - Runner para Visual Studio
+
+## 🔧 Configurações de Desenvolvimento
+
+### Banco de Dados
+- **SQL Server 2022**: `localhost:1433`
+- **Database**: `InventoryDb`
+- **Usuário**: `SA`
+- **Senha**: `Teste123!`
+- **Connection String**: Configurada em `appsettings.json`
+
+### Message Broker
+- **RabbitMQ Management**: `http://localhost:15672`
+- **Usuário**: `guest`
+- **Senha**: `guest`
+- **Porta AMQP**: `5672`
+
+### Estrutura de Dados
+```sql
+-- Tabela Products
+CREATE TABLE Products (
+    ProductId UNIQUEIDENTIFIER PRIMARY KEY,
+    Name NVARCHAR(100) NOT NULL,
+    Description NVARCHAR(MAX),
+    Price DECIMAL(18,2) NOT NULL,
+    StockQuantity INT NOT NULL
+);
+```
+
+## 🏛️ Padrões e Boas Práticas
+
+### Clean Architecture Implementada
+- **Separation of Concerns**: Cada camada tem responsabilidade específica
+- **Dependency Inversion**: Dependências apontam para abstrações
+- **Repository Pattern**: Abstração do acesso a dados
+- **Gateway Pattern**: Interface entre camadas de aplicação e infraestrutura
+- **Mapper Pattern**: Conversão entre entidades de domínio e persistência
+
+### Validações de Negócio
+- **Product.Reserve()**: Valida quantidade positiva e disponibilidade de estoque
+- **Product.Release()**: Valida quantidade positiva para liberação
+- **Product.AddStock()**: Valida quantidade positiva para adição
+- **Product.SetPrice()**: Valida preço não negativo
+
+### Tratamento de Exceções
+- **DataAccessException**: Exceções customizadas para acesso a dados
+- **ArgumentException**: Validações de parâmetros de entrada
+- **InvalidOperationException**: Operações inválidas de negócio
 
 ## 🤝 Contribuindo
 Sinta-se à vontade para abrir issues, sugerir melhorias ou enviar pull requests. Este projeto é um ponto de partida para soluções modernas e escaláveis!
