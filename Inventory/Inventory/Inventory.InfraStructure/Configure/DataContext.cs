@@ -1,4 +1,4 @@
-﻿using Inventory.InfraStructure.Entitys;
+﻿using Inventory.InfraStructure.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
