@@ -1,6 +1,6 @@
 ﻿using Inventory.Application.AbstractionsGateways;
 using Inventory.Application.Entities;
-using Inventory.Application.Mappers;
+using Inventory.Web.Mappers;
 using Inventory.Web.RequestsDto;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,7 +16,7 @@ public class ProductController(IProductGateway productGateway) : ControllerBase
     public async Task<IActionResult> GetAllProducts()
     {
         var products = await productGateway.GetAllProducts();
-        return Ok(products);
+        return Ok(products.Select(x => x.ToProductResponse()));
     }
 
     [HttpGet]
@@ -34,16 +34,14 @@ public class ProductController(IProductGateway productGateway) : ControllerBase
     public async Task<IActionResult> CreateProduct([FromBody] ProductRequest product)
     {
         var createdProduct = await productGateway.AddProduct(product.ToProduct());
-        if(createdProduct == null)
-            return BadRequest();
-        return Ok(createdProduct);
+        return Ok(createdProduct.ToProductResponse());
     }
     
     [HttpPut]
     [Route("update-product")]
-    public async Task<IActionResult> UpdateProduct([FromBody] Product product)
+    public async Task<IActionResult> UpdateProduct([FromBody] ProductRequest product)
     {
-        await productGateway.UpdateProduct(product);
+        await productGateway.UpdateProduct(product.ToProduct());
         return Ok();
     }
 

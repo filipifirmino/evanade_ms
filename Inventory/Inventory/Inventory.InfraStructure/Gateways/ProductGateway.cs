@@ -34,8 +34,8 @@ public class ProductGateway : IProductGateway
     {
         try
         {
-            await _repository.UpdateAsync(product.ToProductEntity());
-            _logger.LogInformation("Update produtc {@product}", product);
+           await _repository.UpdateAsync(product.ToProductEntity());
+            _logger.LogInformation("Update product {@product}", product);
             return;
         }
         catch (SqlException ex)
@@ -63,7 +63,7 @@ public class ProductGateway : IProductGateway
         try
         {
             var result = await _repository.GetByIdAsync(productId);
-            return result.ToProduct();
+            return result?.ToProduct();
         }
         catch (SqlException ex)
         {

@@ -1,6 +1,6 @@
-﻿namespace Inventory.Web.RequestsDto;
+﻿namespace Inventory.Web.ResponsesDto;
 
-public class ProductRequest
+public class ProductResponse
 {
     public string? Name { get; set; }
     public string? Description { get; set; }

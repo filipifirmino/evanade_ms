@@ -1,5 +1,6 @@
 ﻿using Inventory.Application.Configure;
 using Inventory.InfraStructure.Configure;
+using Inventory.Web.Middlewares;
 using Microsoft.OpenApi.Models;
 
 namespace Inventory.Web;
@@ -36,6 +37,7 @@ public class Startup
         
         app.UseHttpsRedirection();
         app.UseRouting();
+        app.UseMiddleware<RequestTimingMiddleware>();
         app.UseEndpoints(endpoints =>
         {
             endpoints.MapControllers();
