@@ -1,5 +1,7 @@
 ﻿using Inventory.Application.AbstractionsGateways;
 using Inventory.Application.Entities;
+using Inventory.Application.Mappers;
+using Inventory.Web.RequestsDto;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Inventory.Web.Controllers;
@@ -29,9 +31,9 @@ public class ProductController(IProductGateway productGateway) : ControllerBase
 
     [HttpPost]
     [Route("create-product")]
-    public async Task<IActionResult> CreateProduct([FromBody] Product product)
+    public async Task<IActionResult> CreateProduct([FromBody] ProductRequest product)
     {
-        var createdProduct = await productGateway.AddProduct(product);
+        var createdProduct = await productGateway.AddProduct(product.ToProduct());
         if(createdProduct == null)
             return BadRequest();
         return Ok(createdProduct);

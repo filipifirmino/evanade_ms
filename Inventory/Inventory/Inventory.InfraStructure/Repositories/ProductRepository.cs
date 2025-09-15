@@ -1,5 +1,5 @@
 ﻿using Inventory.InfraStructure.Configure;
-using Inventory.InfraStructure.Entitys;
+using Inventory.InfraStructure.Entities;
 using Inventory.InfraStructure.Repositories.Abstractions;
 
 namespace Inventory.InfraStructure.Repositories;

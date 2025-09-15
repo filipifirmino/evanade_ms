@@ -1,4 +1,4 @@
-﻿using Inventory.InfraStructure.Entitys;
+﻿using Inventory.InfraStructure.Entities;
 
 namespace Inventory.InfraStructure.Repositories.Abstractions;
 

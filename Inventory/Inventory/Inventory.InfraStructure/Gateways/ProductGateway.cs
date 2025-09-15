@@ -1,6 +1,5 @@
 ﻿using Inventory.Application.AbstractionsGateways;
 using Inventory.Application.Entities;
-using Inventory.InfraStructure.Entitys;
 using Inventory.InfraStructure.Mapper;
 using Inventory.InfraStructure.Repositories.Abstractions;
 using Inventory.InfraStructure.Tools;

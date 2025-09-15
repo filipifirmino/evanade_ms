@@ -163,7 +163,9 @@ public class ProductTest
     [Fact]
     public void MultipleOperations_ShouldWorkCorrectly()
     {
-        var product = AutoFaker.Generate<Product>();
+        var product = new AutoFaker<Product>()
+            .RuleFor(p => p.StockQuantity, 20)
+            .Generate();;
 
         product.AddStock(10);
         product.Reserve(5);

@@ -1,5 +1,5 @@
 ﻿using Inventory.Application.Entities;
-using Inventory.InfraStructure.Entitys;
+using Inventory.InfraStructure.Entities;
 
 namespace Inventory.InfraStructure.Mapper;
 
