@@ -1,5 +1,6 @@
 ﻿using Sales.Application.Configure;
 using Sales.Infrastructure.Configure;
+using Sales.Web.Middlewares;
 
 namespace Sales.Web;
 
@@ -35,6 +36,7 @@ public class Startup
         
         app.UseHttpsRedirection();
         app.UseRouting();
+        app.UseMiddleware<RequestTimingMiddleware>();
         app.UseEndpoints(endpoints =>
         {
             endpoints.MapControllers();

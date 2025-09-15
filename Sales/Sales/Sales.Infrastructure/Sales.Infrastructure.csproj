@@ -16,4 +16,17 @@
         <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.8-rc.2.24473.5" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Gateways\" />
+      <Folder Include="Mappers\" />
+      <Folder Include="Migrations\" />
+      <Folder Include="Rabbt\" />
+      <Folder Include="Repositories\" />
+      <Folder Include="Tools\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Sales.Application\Sales.Application.csproj" />
+    </ItemGroup>
+
 </Project>
