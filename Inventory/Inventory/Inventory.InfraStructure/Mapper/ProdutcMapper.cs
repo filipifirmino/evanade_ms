@@ -18,5 +18,6 @@ public static class ProductMapper
     public static Product ToProduct(this ProductEntity entity)
         => new Product (entity.Name,entity.Description, entity.Price, entity.StockQuantity)
         {
+            ProductId = entity.ProductId
         };
 }
