@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Sales.Infrastructure.Entities;
 
 namespace Sales.Infrastructure.Configure;
 
@@ -18,7 +19,29 @@ public class DataContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
-        // Configure your entity mappings here
+        modelBuilder.Entity<OrderEntity>(entity =>
+        {
+            entity.HasKey(e => e.OrderId);
+            
+            entity.Property(e => e.OrderId).ValueGeneratedNever();
+            entity.Property(e => e.CustomerId).IsRequired();
+            entity.Property(e => e.TotalAmount).HasColumnType("decimal(18,2)");
+            entity.Property(e => e.Status).HasConversion<string>();
+            
+
+            entity.HasIndex(e => e.CustomerId)
+                  .HasDatabaseName("IX_Orders_CustomerId");
+                  
+            entity.HasIndex(e => e.Status)
+                  .HasDatabaseName("IX_Orders_Status");
+                  
+            entity.HasIndex(e => e.TotalAmount)
+                  .HasDatabaseName("IX_Orders_TotalAmount");
+                  
+            // Composite index for common query patterns
+            entity.HasIndex(e => new { e.CustomerId, e.Status })
+                  .HasDatabaseName("IX_Orders_CustomerId_Status");
+        });
     }
   
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

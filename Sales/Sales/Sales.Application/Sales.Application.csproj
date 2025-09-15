@@ -12,4 +12,10 @@
         <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="9.0.8" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="AbstractionsGateways\" />
+      <Folder Include="Mappers\" />
+      <Folder Include="UseCases\" />
+    </ItemGroup>
+
 </Project>
