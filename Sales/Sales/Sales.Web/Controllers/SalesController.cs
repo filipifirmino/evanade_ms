@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
+using Sales.Application.AbstractionsGateways;
+using Sales.Web.Mappers;
 using Sales.Web.ResponsesDto;
 using Sales.Web.ResquestsDto;
 
@@ -8,62 +10,51 @@ namespace Sales.Web.Controllers;
 [Route("api/v1/[controller]")]
 public class SalesController : ControllerBase
 {
-    public SalesController()
+    private readonly IOrderGateway _orderGateway;
+    public SalesController(IOrderGateway orderGateway)
     {
-        
+        _orderGateway = orderGateway;
     }
  
     [HttpGet]
     [Route("all-sales")]
-    public ActionResult<IEnumerable<OrderResponse>> GetAll()
-        => Ok(_sales.Values);
+    public async Task<IActionResult> GetAll()
+    {
+        var result = await _orderGateway.GetAllOrders();
+        return Ok(result.Select(x => x.ToResponse()));
+    }
     
     [HttpGet]
     [Route("get-by-id")]
-    public ActionResult<OrderResponse> GetById([FromHeader] Guid id)
-        => _sales.TryGetValue(id, out var sale) ? Ok(sale) : NotFound();
+    public async Task<IActionResult> GetById([FromHeader] Guid id)
+    {
+        var result = await _orderGateway.GetOrderById(id);
+        return result is null ? NotFound() : Ok(result.ToResponse());
+    }
     
     [HttpPost]
     [Route("create-sale")]
-    public ActionResult<OrderResponse> Create([FromBody] OrderRequest request)
+    public async Task<IActionResult> Create([FromBody] OrderRequest request)
     {
-        if (!ModelState.IsValid) return ValidationProblem(ModelState);
-
-        var sale = new OrderResponse(
-            Id: Guid.NewGuid(),
-            CustomerName: request.CustomerName,
-            Amount: request.Amount,
-            Date: request.Date
-        );
-
-        _sales[sale.Id] = sale;
-
-        return CreatedAtAction(nameof(GetById), new { id = sale.Id }, sale);
+        var result = await _orderGateway.AddProduct(request.ToOrder());
+        return Ok(result.ToResponse());
     }
     
     [HttpPut]
     [Route("update-sale")]
-    public IActionResult Update([FromHeader] Guid id, [FromBody] OrderRequest request)
+    public async Task<IActionResult> Update([FromHeader] Guid id, [FromBody] OrderRequest request)
     {
-        if (!ModelState.IsValid) return ValidationProblem(ModelState);
-
-        if (!_sales.ContainsKey(id))
-            return NotFound();
-
-        _sales[id] = new SaleResponse(
-            Id: id,
-            CustomerName: request.CustomerName,
-            Amount: request.Amount,
-            Date: request.Date
-        );
-
-        return NoContent();
+       await _orderGateway.UpdateOrder(request.ToOrder());
+       return Ok();
     }
-    
+
     [HttpDelete]
     [Route("remove-sale")]
-    public IActionResult Delete([FromHeader] Guid id)
-        => _sales.TryRemove(id, out _) ? NoContent() : NotFound();
+    public async Task<IActionResult> Delete([FromBody] OrderRequest request)
+    {
+        await _orderGateway.DeleteOrder(request.ToOrder());
+        return Ok();
+    }
 
     
 }

@@ -1,4 +1,3 @@
-using Inventory.Web;
 
 namespace Inventory.Web;
 public static class Program

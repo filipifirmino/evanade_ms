@@ -7,9 +7,9 @@ public class Order
 {
     public Guid OrderId { get; set; }
     public Guid CustomerId { get; set; }
-    private List<OrderItem> Items { get; set; } = new();
-    protected decimal TotalAmount { get; set; }
-    protected Status Status { get; set; }
+    public  List<OrderItem> Items { get; set; } = new();
+    public decimal TotalAmount { get; set; }
+    public  Status Status { get; set; }
 
 
     public void AddItem(Guid productId, int quantity, decimal price)

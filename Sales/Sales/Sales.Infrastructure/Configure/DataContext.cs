@@ -13,9 +13,7 @@ public class DataContext : DbContext
     {
         _configuration = configuration;
     }
-  
-    // Define your DbSets here
-  
+    
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
@@ -27,20 +25,16 @@ public class DataContext : DbContext
             entity.Property(e => e.CustomerId).IsRequired();
             entity.Property(e => e.TotalAmount).HasColumnType("decimal(18,2)");
             entity.Property(e => e.Status).HasConversion<string>();
-            
 
-            entity.HasIndex(e => e.CustomerId)
-                  .HasDatabaseName("IX_Orders_CustomerId");
-                  
-            entity.HasIndex(e => e.Status)
-                  .HasDatabaseName("IX_Orders_Status");
-                  
-            entity.HasIndex(e => e.TotalAmount)
-                  .HasDatabaseName("IX_Orders_TotalAmount");
+
+            entity.HasIndex(e => e.CustomerId);
+
+            entity.HasIndex(e => e.Status);
+
+            entity.HasIndex(e => e.TotalAmount);
                   
             // Composite index for common query patterns
-            entity.HasIndex(e => new { e.CustomerId, e.Status })
-                  .HasDatabaseName("IX_Orders_CustomerId_Status");
+            entity.HasIndex(e => new { e.CustomerId, e.Status });
         });
     }
   
