@@ -47,7 +47,42 @@ namespace Sales.Infrastructure.Migrations
 
                     b.HasIndex("CustomerId", "Status");
 
-                    b.ToTable("OrderEntity", (string)null);
+                    b.ToTable("OrderEntity");
+                });
+
+            modelBuilder.Entity("Sales.Infrastructure.Entities.OrderEntity", b =>
+                {
+                    b.OwnsMany("Sales.Infrastructure.ValueObjects.OrderItemEntity", "Items", b1 =>
+                        {
+                            b1.Property<int>("Id")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("int");
+
+                            SqlServerPropertyBuilderExtensions.UseIdentityColumn(b1.Property<int>("Id"));
+
+                            b1.Property<Guid>("OrderId")
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<Guid>("ProductId")
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<int>("Quantity")
+                                .HasColumnType("int");
+
+                            b1.Property<decimal>("UnitPrice")
+                                .HasColumnType("decimal(18,2)");
+
+                            b1.HasKey("Id");
+
+                            b1.HasIndex("OrderId");
+
+                            b1.ToTable("OrderItems", (string)null);
+
+                            b1.WithOwner()
+                                .HasForeignKey("OrderId");
+                        });
+
+                    b.Navigation("Items");
                 });
 #pragma warning restore 612, 618
         }

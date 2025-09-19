@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Sales.Infrastructure.Entities;
+using Sales.Infrastructure.ValueObjects;
 
 namespace Sales.Infrastructure.Configure;
 
@@ -25,6 +26,17 @@ public class DataContext : DbContext
             entity.Property(e => e.CustomerId).IsRequired();
             entity.Property(e => e.TotalAmount).HasColumnType("decimal(18,2)");
             entity.Property(e => e.Status).HasConversion<string>();
+            entity.OwnsMany(e => e.Items, items =>
+            {
+                items.WithOwner().HasForeignKey(oi => oi.OrderId);
+                items.ToTable("OrderItems");
+                items.Property<int>("Id");
+                items.HasKey("Id");
+
+                items.Property(oi => oi.ProductId).IsRequired();
+                items.Property(oi => oi.Quantity).IsRequired();
+                items.Property(oi => oi.UnitPrice).HasColumnType("decimal(18,2)");
+            });
 
 
             entity.HasIndex(e => e.CustomerId);
