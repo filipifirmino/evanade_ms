@@ -1,4 +1,6 @@
-﻿using Sales.Application.Configure;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
+using Sales.Application.Configure;
 using Sales.Infrastructure.Configure;
 using Sales.Web.Middlewares;
 
@@ -20,7 +22,7 @@ public class Startup
         services.AddApplicationConfiguration();
         services.AddSwaggerGen(s =>
         {
-            s.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "Sales API", Version = "v1" });
+            s.SwaggerDoc("v1", new OpenApiInfo { Title = "Sales API", Version = "v1" });
         });
         services.AddDbContext<DataContext>();
     }

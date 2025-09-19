@@ -1,17 +1,22 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Sales.Application.AbstractionsGateways;
+using Sales.Infrastructure.Gateways;
+using Sales.Infrastructure.Repositories;
+using Sales.Infrastructure.Repositories.Abstractions;
 
 namespace Sales.Infrastructure.Configure;
 
 public static class ConfigureInfra
 {
-    public static void AddGateway(this IServiceCollection services)
+    private static void AddGateway(this IServiceCollection services)
     {
-        // Add gateway services here
+        services.AddScoped<IOrderGateway, OrderGateway>();
     }
 
-    public static void AddRepository(this IServiceCollection services)
+    private static void AddRepository(this IServiceCollection services)
     {
-        //Add repository services here
+        services.AddScoped(typeof(IRepositoryBase<>), typeof(RepositoryBase<>));
+        services.AddScoped<IOrderRepository, OrderRepository>();
     }
 
     public static void  AddConfigureInfra(this IServiceCollection services)
