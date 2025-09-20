@@ -30,6 +30,15 @@ O projeto segue a **Clean Architecture** com separação clara de responsabilida
 - **Validações de Negócio**: Regras para quantidade e preços
 - **API REST**: Endpoints para todas as operações
 - **Testes Unitários**: Cobertura completa dos métodos de negócio
+- **Middleware de Performance**: Monitoramento de tempo de resposta das requisições
+
+### Sales Microservice
+- **Gestão de Pedidos**: CRUD completo para pedidos de venda
+- **Controle de Status**: Estados do pedido (Created, Confirmed, Cancelled, Failed)
+- **Cálculo Automático**: Total do pedido baseado nos itens
+- **Validações de Negócio**: Regras para criação e atualização de pedidos
+- **API REST**: Endpoints para todas as operações de vendas
+- **Middleware de Performance**: Monitoramento de tempo de resposta das requisições
 
 ### Endpoints da API Inventory
 - `GET /api/v1/Product/all-products` - Listar todos os produtos
@@ -38,9 +47,16 @@ O projeto segue a **Clean Architecture** com separação clara de responsabilida
 - `PUT /api/v1/Product/update-product` - Atualizar produto
 - `DELETE /api/v1/Product/remove-product` - Remover produto
 
-## 🛠️ Tecnologias Utilizadas
+### Endpoints da API Sales
+- `GET /api/v1/Sales/all-sales` - Listar todos os pedidos
+- `GET /api/v1/Sales/get-by-id` - Buscar pedido por ID
+- `POST /api/v1/Sales/create-sale` - Criar novo pedido
+- `PUT /api/v1/Sales/update-sale` - Atualizar pedido
+- `DELETE /api/v1/Sales/remove-sale` - Remover pedido
 
-### Backend
+## 🛠️ Tecnologias e Infraestrutura
+
+### Stack Tecnológico
 - **.NET 9.0** - Framework principal para desenvolvimento das APIs
 - **ASP.NET Core** - Para criação das APIs REST
 - **Entity Framework Core 9.0** - ORM para acesso a dados
@@ -48,9 +64,50 @@ O projeto segue a **Clean Architecture** com separação clara de responsabilida
 - **RabbitMQ** - Message broker para comunicação entre microsserviços
 - **Swagger/OpenAPI** - Documentação automática das APIs
 
-### Infraestrutura
+### Infraestrutura e Containerização
 - **Docker & Docker Compose** - Containerização e orquestração
-- **Clean Architecture** - Padrão arquitetural para separação de responsabilidades
+- **SQL Server**: `localhost:1433` (Usuário: `SA`, Senha: `Teste123!`)
+- **RabbitMQ Management**: `http://localhost:15672` (Usuário: `guest`, Senha: `guest`)
+
+### Bancos de Dados
+- **Inventory Database**: `InventoryDb`
+- **Sales Database**: `SalesDb`
+- **Connection String**: Configurada em `appsettings.json` de cada projeto
+
+### Estrutura de Dados
+
+#### Inventory Database (InventoryDb)
+```sql
+-- Tabela Products
+CREATE TABLE Products (
+    ProductId UNIQUEIDENTIFIER PRIMARY KEY,
+    Name NVARCHAR(100) NOT NULL,
+    Description NVARCHAR(MAX),
+    Price DECIMAL(18,2) NOT NULL,
+    StockQuantity INT NOT NULL
+);
+```
+
+#### Sales Database (SalesDb)
+```sql
+-- Tabela Orders
+CREATE TABLE Orders (
+    OrderId UNIQUEIDENTIFIER PRIMARY KEY,
+    CustomerId UNIQUEIDENTIFIER NOT NULL,
+    TotalAmount DECIMAL(18,2) NOT NULL,
+    Status NVARCHAR(20) NOT NULL
+);
+
+-- Tabela OrderItems
+CREATE TABLE OrderItems (
+    Id INT IDENTITY(1,1) PRIMARY KEY,
+    OrderId UNIQUEIDENTIFIER NOT NULL,
+    ProductId UNIQUEIDENTIFIER NOT NULL,
+    Quantity INT NOT NULL,
+    UnitPrice DECIMAL(18,2) NOT NULL,
+    FOREIGN KEY (OrderId) REFERENCES Orders(OrderId)
+);
+```
 
 ### Testes
 - **xUnit** - Framework de testes unitários
@@ -95,43 +152,71 @@ dotnet run
 - **Inventory API**: `https://localhost:5001` ou `http://localhost:5000`
 - **Sales API**: `https://localhost:5003` ou `http://localhost:5002`
 - **Swagger UI**: Adicione `/swagger` à URL da API
+- **Request Timing**: Todas as respostas incluem header `X-Response-Time-ms` com tempo de processamento
 
-## 🔧 Configurações de Desenvolvimento
+## 🏛️ Arquitetura e Padrões
 
-### Serviços de Infraestrutura
-- **SQL Server**: `localhost:1433`
-  - Usuário: `SA`
-  - Senha: `Teste123!`
-- **RabbitMQ Management**: `http://localhost:15672`
-  - Usuário: `guest`
-  - Senha: `guest`
+Este projeto implementa os princípios da **Clean Architecture** e diversos padrões de desenvolvimento, garantindo alta qualidade e manutenibilidade do código.
 
-### Arquivos de Configuração
-- `appsettings.json` - Configurações de produção
-- `appsettings.Development.json` - Configurações de desenvolvimento
-- `docker-compose.yml` - Orquestração dos containers
+### Clean Architecture Implementada
 
-## 🏛️ Clean Architecture
-
-Este projeto implementa os princípios da **Clean Architecture**, garantindo:
-
-### Camadas da Aplicação
+#### Camadas da Aplicação
 - **Web (Apresentação)**: Controllers, DTOs e configurações da API
 - **Application (Aplicação)**: Casos de uso, interfaces e regras de negócio
 - **Infrastructure (Infraestrutura)**: Acesso a dados, repositórios e serviços externos
 - **Tests**: Testes unitários e de integração
 
-### Benefícios
+#### Benefícios da Arquitetura
 - ✅ **Independência de Frameworks**: A lógica de negócio não depende de frameworks externos
 - ✅ **Testabilidade**: Fácil criação de testes unitários
 - ✅ **Independência de UI**: A interface pode mudar sem afetar o sistema
 - ✅ **Independência de Banco de Dados**: Pode trocar de SQL Server para outro SGBD
 - ✅ **Independência de Agentes Externos**: A lógica de negócio não conhece o mundo externo
 
-### Princípios Aplicados
+### Padrões de Design Implementados
+- **Repository Pattern**: Abstração do acesso a dados
+- **Gateway Pattern**: Interface entre camadas de aplicação e infraestrutura
+- **Mapper Pattern**: Conversão entre entidades de domínio e persistência
 - **Dependency Inversion**: Dependências apontam para abstrações, não implementações
 - **Separation of Concerns**: Cada camada tem uma responsabilidade específica
 - **Single Responsibility**: Cada classe tem apenas uma razão para mudar
+
+### Validações de Negócio
+
+#### Inventory Microservice
+- **Product.Reserve()**: Valida quantidade positiva e disponibilidade de estoque
+- **Product.Release()**: Valida quantidade positiva para liberação
+- **Product.AddStock()**: Valida quantidade positiva para adição
+- **Product.SetPrice()**: Valida preço não negativo
+
+#### Sales Microservice
+- **Order.AddItem()**: Adiciona itens ao pedido com validações
+- **Order.CalculateTotal()**: Calcula total automaticamente baseado nos itens
+- **Order.Confirm()**: Altera status para confirmado
+- **Order.Cancel()**: Cancela pedido com motivo
+
+### Tratamento de Exceções
+- **DataAccessException**: Exceções customizadas para acesso a dados
+- **ArgumentException**: Validações de parâmetros de entrada
+- **InvalidOperationException**: Operações inválidas de negócio
+
+### Entidades e Value Objects
+
+#### Inventory Microservice
+- **Product**: Entidade principal com operações de estoque
+  - `Reserve(int quantity)`: Reserva estoque
+  - `Release(int quantity)`: Libera estoque
+  - `AddStock(int quantity)`: Adiciona estoque
+  - `SetPrice(decimal price)`: Define preço
+
+#### Sales Microservice
+- **Order**: Entidade principal de pedidos
+  - `AddItem(Guid productId, int quantity, decimal price)`: Adiciona item
+  - `CalculateTotal()`: Calcula total do pedido
+  - `Confirm()`: Confirma pedido
+  - `Cancel(string reason)`: Cancela pedido
+- **OrderItem**: Value Object para itens do pedido
+- **Status**: Enum com estados do pedido (Created, Confirmed, Cancelled, Failed)
 
 ## 🧪 Testes Unitários
 
@@ -190,52 +275,21 @@ Inventory.Tests/
 - **coverlet.collector 6.0.2** - Coleta de cobertura de código
 - **xunit.runner.visualstudio 2.8.2** - Runner para Visual Studio
 
-## 🔧 Configurações de Desenvolvimento
+## ⚡ Middlewares e Performance
 
-### Banco de Dados
-- **SQL Server 2022**: `localhost:1433`
-- **Database**: `InventoryDb`
-- **Usuário**: `SA`
-- **Senha**: `Teste123!`
-- **Connection String**: Configurada em `appsettings.json`
+### RequestTimingMiddleware
+Ambos os microsserviços implementam um middleware customizado para monitoramento de performance:
 
-### Message Broker
-- **RabbitMQ Management**: `http://localhost:15672`
-- **Usuário**: `guest`
-- **Senha**: `guest`
-- **Porta AMQP**: `5672`
+- **Funcionalidade**: Mede o tempo de processamento de cada requisição
+- **Header de Resposta**: `X-Response-Time-ms` com tempo em milissegundos
+- **Logging**: Registra o tempo de processamento nos logs da aplicação
+- **Implementação**: Usa `Stopwatch` para medição precisa do tempo
 
-### Estrutura de Dados
-```sql
--- Tabela Products
-CREATE TABLE Products (
-    ProductId UNIQUEIDENTIFIER PRIMARY KEY,
-    Name NVARCHAR(100) NOT NULL,
-    Description NVARCHAR(MAX),
-    Price DECIMAL(18,2) NOT NULL,
-    StockQuantity INT NOT NULL
-);
-```
-
-## 🏛️ Padrões e Boas Práticas
-
-### Clean Architecture Implementada
-- **Separation of Concerns**: Cada camada tem responsabilidade específica
-- **Dependency Inversion**: Dependências apontam para abstrações
-- **Repository Pattern**: Abstração do acesso a dados
-- **Gateway Pattern**: Interface entre camadas de aplicação e infraestrutura
-- **Mapper Pattern**: Conversão entre entidades de domínio e persistência
-
-### Validações de Negócio
-- **Product.Reserve()**: Valida quantidade positiva e disponibilidade de estoque
-- **Product.Release()**: Valida quantidade positiva para liberação
-- **Product.AddStock()**: Valida quantidade positiva para adição
-- **Product.SetPrice()**: Valida preço não negativo
-
-### Tratamento de Exceções
-- **DataAccessException**: Exceções customizadas para acesso a dados
-- **ArgumentException**: Validações de parâmetros de entrada
-- **InvalidOperationException**: Operações inválidas de negócio
+### Benefícios
+- ✅ **Monitoramento em Tempo Real**: Visibilidade imediata da performance
+- ✅ **Debugging Facilitado**: Identificação rápida de requisições lentas
+- ✅ **Métricas de API**: Dados para análise de performance
+- ✅ **Headers Padronizados**: Compatível com ferramentas de monitoramento
 
 ## 🤝 Contribuindo
 Sinta-se à vontade para abrir issues, sugerir melhorias ou enviar pull requests. Este projeto é um ponto de partida para soluções modernas e escaláveis!
