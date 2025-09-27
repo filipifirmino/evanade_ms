@@ -10,71 +10,73 @@ namespace Sales.Infrastructure.Gateways;
 public class OrderGateway : IOrderGateway
 {
     private readonly IOrderRepository _orderRepository;
+    
     public OrderGateway(IOrderRepository orderRepository)
     {
         _orderRepository = orderRepository;
     }
+
     public async Task<Order> AddProduct(Order order)
     {
-        try
-        {
-            var result = await _orderRepository.AddAsync(order.ToEntity());
-            return result.ToDomain();
-        }
-        catch (SqlException e)
-        {
-            throw new DataAccessException($"Error inserting record into database ", e);
-        }
-       
+        return await ExecuteDatabaseOperation(
+            async () => (await _orderRepository.AddAsync(order.ToEntity())).ToDomain(),
+            "Error creating order"
+        );
     }
 
     public async Task UpdateOrder(Order order)
     {
-        try
-        {
-            await _orderRepository.UpdateAsync(order.ToEntity());
-        }
-        catch (SqlException e)
-        {
-            throw new DataAccessException($"Error updating record into database ", e);
-        }
+        await ExecuteDatabaseOperation(
+            () => _orderRepository.UpdateAsync(order.ToEntity()),
+            "Error updating order"
+        );
     }
 
     public async Task DeleteOrder(Order order)
     {
-        try
-        {
-            await _orderRepository.DeleteAsync(order.ToEntity());
-        }
-        catch (SqlException e)
-        {
-            throw new DataAccessException($"Error deleting record into database ", e);
-        }
+        await ExecuteDatabaseOperation(
+            () => _orderRepository.DeleteAsync(order.ToEntity()),
+            "Error deleting order"
+        );
     }
 
     public async Task<Order?> GetOrderById(Guid orderId)
     {
-        try
-        {
-            var result = await _orderRepository.GetByIdAsync(orderId);
-            return result?.ToDomain();
-        }
-        catch (SqlException e)
-        {
-            throw new DataAccessException($"Error getting record into database ", e);
-        }
+        return await ExecuteDatabaseOperation(
+            async () => (await _orderRepository.GetByIdAsync(orderId))?.ToDomain(),
+            "Error retrieving order"
+        );
     }
 
     public async Task<IEnumerable<Order>> GetAllOrders()
     {
+        return await ExecuteDatabaseOperation(
+            async () => (await _orderRepository.GetAllAsync()).Select(x => x.ToDomain()),
+            "Error retrieving orders"
+        );
+    }
+
+    private async Task<T> ExecuteDatabaseOperation<T>(Func<Task<T>> operation, string errorMessage)
+    {
         try
         {
-            var result = await _orderRepository.GetAllAsync();
-            return result.Select(x => x.ToDomain());
+            return await operation();
         }
-        catch (SqlException e)
+        catch (SqlException ex)
         {
-            throw new DataAccessException($"Error getting record into database ", e);
+            throw new DataAccessException(errorMessage, ex);
+        }
+    }
+
+    private async Task ExecuteDatabaseOperation(Func<Task> operation, string errorMessage)
+    {
+        try
+        {
+            await operation();
+        }
+        catch (SqlException ex)
+        {
+            throw new DataAccessException(errorMessage, ex);
         }
     }
 }

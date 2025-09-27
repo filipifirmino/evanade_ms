@@ -29,6 +29,30 @@ public class Order
     {
         Status = Status.Cancelled;
         var reasonMessage = $"Order {OrderId} was cancelled. Reason: {reason}";
-    }  
+    }
+    
+    public bool IsValid()
+    {
+        return TotalAmount > 0 && 
+               Items.Count > 0 && 
+               Items.All(item => item.Quantity > 0 && item.UnitPrice > 0);
+    }
+    
+    public string GetValidationErrors()
+    {
+        var errors = new List<string>();
+        
+        if (TotalAmount <= 0)
+            errors.Add("Total amount must be greater than zero");
+            
+        if (Items.Count == 0)
+            errors.Add("Order must have at least one item");
+            
+        var invalidItems = Items.Where(item => item.Quantity <= 0 || item.UnitPrice <= 0).ToList();
+        if (invalidItems.Any())
+            errors.Add($"Invalid items found: {invalidItems.Count} items have invalid quantity or price");
+            
+        return string.Join("; ", errors);
+    }
 }
 

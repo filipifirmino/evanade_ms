@@ -1,5 +1,4 @@
-﻿using System.Net.Http.Headers;
-using System.Text;
+﻿using System.Text;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using APIGateway.ApplicationCore.Abstractions;
@@ -54,10 +53,28 @@ namespace APIGateway.Infra.Http
                         Content = "Rota não autorizada"
                     };
                 }
-
-                // Criar cliente HTTP
+                
                 var client = _httpClientFactory.CreateClient(serviceName);
-                var request = CreateHttpRequestMessage(path, method, body, headers);
+                // Montar caminho downstream usando DownstreamBasePath
+                var downstreamBasePath = _routeConfigurationService.GetDownstreamBasePath(serviceName);
+                var relativePath = path;
+                if (!string.IsNullOrWhiteSpace(downstreamBasePath))
+                {
+                    // path esperado: "/api/{public}/..."; remover "/api/{public}/"
+                    if (relativePath.StartsWith("/api/", StringComparison.OrdinalIgnoreCase))
+                    {
+                        relativePath = relativePath.Substring(5);
+                    }
+                    var firstSlash = relativePath.IndexOf('/') ;
+                    if (firstSlash >= 0)
+                    {
+                        relativePath = relativePath.Substring(firstSlash + 1);
+                    }
+                    // Combinar com downstream base, garantindo uma única barra
+                    relativePath = $"/{downstreamBasePath.Trim('/')}" + (string.IsNullOrEmpty(relativePath) ? string.Empty : $"/{relativePath}");
+                }
+
+                var request = CreateHttpRequestMessage(relativePath, method, body, headers);
                 
                 // Enviar requisição
                 _logger.LogInformation("Enviando requisição para: {ServiceName} - {Path}", 

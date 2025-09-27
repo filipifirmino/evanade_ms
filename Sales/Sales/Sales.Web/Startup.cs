@@ -20,6 +20,7 @@ public class Startup
         services.AddControllers();
         services.AddConfigureInfra();
         services.AddApplicationConfiguration();
+        services.AddHttpClient();
         services.AddSwaggerGen(s =>
         {
             s.SwaggerDoc("v1", new OpenApiInfo { Title = "Sales API", Version = "v1" });

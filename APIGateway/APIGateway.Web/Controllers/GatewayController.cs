@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using APIGateway.ApplicationCore.Abstractions;
+using APIGateway.ApplicationCore.DTOs;
 
 namespace APIGateway.Web.Controllers;
 
@@ -18,28 +19,56 @@ public class GatewayController: ControllerBase
             _logger = logger;
         }
         
-        [HttpGet("{serviceName}/{*path}")]
-        public async Task<IActionResult> ProxyGet(string serviceName, string path)
+        // SALES
+        [HttpPost("sales/orders")]
+        [Authorize(Roles = "User")]
+        public async Task<IActionResult> CreateOrder([FromBody] OrderRequest orderRequest)
         {
-            return await HandleProxyRequest(serviceName, path, HttpMethod.Get);
+            return await HandleProxyRequest("SalesService", "sales/orders", HttpMethod.Post);
         }
-        
-        [HttpPost("{serviceName}/{*path}")]
-        public async Task<IActionResult> ProxyPost(string serviceName, string path)
+
+        [HttpGet("sales/orders/{id}")]
+        [Authorize(Roles = "User,Admin")]
+        public async Task<IActionResult> GetOrderById(string id)
         {
-            return await HandleProxyRequest(serviceName, path, HttpMethod.Post);
+            return await HandleProxyRequest("SalesService", $"sales/orders/{id}", HttpMethod.Get);
         }
-        
-        [HttpPut("{serviceName}/{*path}")]
-        public async Task<IActionResult> ProxyPut(string serviceName, string path)
+
+        [HttpGet("sales/orders")]
+        [Authorize(Roles = "User,Admin")]
+        public async Task<IActionResult> ListOrders()
         {
-            return await HandleProxyRequest(serviceName, path, HttpMethod.Put);
+            // Query string é preservada pelo HttpContext, montada no HandleProxyRequest
+            return await HandleProxyRequest("SalesService", "sales/orders", HttpMethod.Get);
         }
-        
-        [HttpDelete("{serviceName}/{*path}")]
-        public async Task<IActionResult> ProxyDelete(string serviceName, string path)
+
+        // STOCK / INVENTORY
+        [HttpPost("inventory/products")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> CreateProduct()
         {
-            return await HandleProxyRequest(serviceName, path, HttpMethod.Delete);
+            return await HandleProxyRequest("InventoryService", "inventory/products", HttpMethod.Post);
+        }
+
+        [HttpGet("inventory/products")]
+        [Authorize(Roles = "User,Admin")]
+        public async Task<IActionResult> ListProducts()
+        {
+            return await HandleProxyRequest("InventoryService", "inventory/products", HttpMethod.Get);
+        }
+
+        [HttpGet("inventory/products/{sku}")]
+        [Authorize(Roles = "User,Admin")]
+        public async Task<IActionResult> GetProductBySku(string sku)
+        {
+            return await HandleProxyRequest("InventoryService", $"inventory/products/{sku}", HttpMethod.Get);
+        }
+
+        [HttpPut("inventory/products/{sku}")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> UpdateProduct(string sku)
+        {
+            return await HandleProxyRequest("InventoryService", $"inventory/products/{sku}", HttpMethod.Put);
         }
         
         private async Task<IActionResult> HandleProxyRequest(string serviceName, 
@@ -47,7 +76,10 @@ public class GatewayController: ControllerBase
         {
             try
             {
-                var fullPath = $"/api/{serviceName}/{path}";
+                // Montar fullPath com query string preservada
+                var basePath = $"/api/{path}";
+                var queryString = Request.QueryString.HasValue ? Request.QueryString.Value : string.Empty;
+                var fullPath = string.Concat(basePath, queryString);
                 var headers = ExtractHeaders();
                 var body = method != HttpMethod.Get ? await ExtractBodyAsync() : null;
                 

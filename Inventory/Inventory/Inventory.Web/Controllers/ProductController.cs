@@ -9,7 +9,7 @@ namespace Inventory.Web.Controllers;
 
 [ApiController]
 [Route("api/v1/[controller]")]
-public class ProductController(IProductGateway productGateway) : ControllerBase
+public class ProductController(IProductGateway productGateway, ILogger<ProductController> logger) : ControllerBase
 {
     [HttpGet]
     [Route("all-products")]
@@ -23,6 +23,7 @@ public class ProductController(IProductGateway productGateway) : ControllerBase
     [Route("product-by-id")]
     public async Task<IActionResult> GetProductById([FromHeader] Guid id)
     {
+        logger.LogInformation("Get product with id: {id}", id);
         var product = await productGateway.GetProductById(id);
         if (product == null)
             return NotFound();

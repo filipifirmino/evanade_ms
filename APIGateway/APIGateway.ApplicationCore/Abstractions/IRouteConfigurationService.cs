@@ -1,4 +1,6 @@
-﻿namespace APIGateway.ApplicationCore.Abstractions;
+﻿using System.Net.Http;
+
+namespace APIGateway.ApplicationCore.Abstractions;
 
 public interface IRouteConfigurationService
 {
@@ -6,4 +8,5 @@ public interface IRouteConfigurationService
     bool IsRouteAllowed(string serviceName, string path, HttpMethod method);
     string GetServiceBaseUrl(string serviceName);
     int GetServiceTimeout(string serviceName);
+    string GetDownstreamBasePath(string serviceName);
 }

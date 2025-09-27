@@ -51,6 +51,11 @@ namespace APIGateway.Infra.Configuration
             return _configuration.GetValue<int>($"Services:{serviceName}:TimeoutSeconds", 30);
         }
 
+        public string GetDownstreamBasePath(string serviceName)
+        {
+            return _configuration[$"Services:{serviceName}:DownstreamBasePath"] ?? string.Empty;
+        }
+
         private bool IsRouteMatch(string template, string path)
         {
             // Remover o prefixo /api/ caso exista
