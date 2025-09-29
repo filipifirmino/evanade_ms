@@ -1,5 +1,6 @@
 ﻿using Inventory.Application.Configure;
 using Inventory.InfraStructure.Configure;
+using Inventory.InfraStructure.Rabbit;
 using Inventory.Web.Middlewares;
 using Microsoft.OpenApi.Models;
 
@@ -17,6 +18,7 @@ public class Startup
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddControllers();
+        services.Configure<RabbitMqSettings>(_Configuration.GetSection("RabbitMQ"));
         services.AddConfigureInfra();
         services.AddApplicationConfiguration();
         services.AddSwaggerGen(s =>
@@ -24,6 +26,7 @@ public class Startup
             s.SwaggerDoc("v1", new OpenApiInfo { Title = "Inventory API", Version = "v1" });
         });
         services.AddDbContext<DataContext>();
+        
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

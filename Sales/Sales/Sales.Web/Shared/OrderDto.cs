@@ -11,3 +11,4 @@ public abstract class OrderDto
     public decimal TotalAmount { get; set; }
     public Status Status { get; set; }
 }
+

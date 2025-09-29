@@ -16,5 +16,14 @@ public class ProductRepository(DataContext context)
             .FirstAsync(x => x.ProductId == product.ProductId);
         return entity;
     }
+    
+    public async Task UpdateQuantityProduct(int newQuantity, Guid productId)
+    {
+        var entity = await _context1.Set<ProductEntity>()
+            .FirstAsync(x => x.ProductId == productId);
+        entity.StockQuantity = newQuantity;
+        _context1.Set<ProductEntity>().Update(entity);
+        await _context1.SaveChangesAsync();
+    }
 }
     

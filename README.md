@@ -1,300 +1,171 @@
-﻿# Avanade Challenge - Microservices Inventory & Sales
+﻿# Avanade Challenge - Microservices Architecture
 
-Bem-vindo ao projeto **Avanade Challenge**! Este repositório reúne dois microsserviços principais para gestão de inventário e vendas, implementados seguindo os princípios da Clean Architecture e prontos para rodar em ambiente Docker.
+Sistema de microsserviços para gestão de inventário e vendas com API Gateway, implementado seguindo Clean Architecture e padrões de comunicação assíncrona.
 
-## 🏗️ Arquitetura do Projeto
-
-O projeto segue a **Clean Architecture** com separação clara de responsabilidades:
+## 🏗️ Arquitetura
 
 ```
-├── Inventory/                    # Microsserviço de Inventário
-│   ├── Inventory.Web/           # Camada de Apresentação (API)
-│   ├── Inventory.Application/   # Camada de Aplicação (Casos de Uso)
-│   ├── Inventory.InfraStructure/ # Camada de Infraestrutura (Dados)
-│   ├── Inventory.Tests/         # Testes Unitários
-│   └── Inventory.sln            # Solução .NET
-├── Sales/                       # Microsserviço de Vendas
-│   ├── Sales.Web/              # Camada de Apresentação (API)
-│   ├── Sales.Application/      # Camada de Aplicação (Casos de Uso)
-│   ├── Sales.Infrastructure/   # Camada de Infraestrutura (Dados)
-│   ├── Sales.Tests/            # Testes Unitários
-│   └── Sales.sln               # Solução .NET
-├── docker-compose.yml          # Orquestração dos containers SQL Server e RabbitMQ
+├── APIGateway/                  # Gateway de API (Autenticação, Rate Limiting, Proxy)
+├── Inventory/                   # Microsserviço de Inventário
+│   ├── Inventory.Web/          # API REST
+│   ├── Inventory.Application/  # Casos de Uso e Entidades
+│   └── Inventory.InfraStructure/ # Repositórios e Entity Framework
+├── Sales/                      # Microsserviço de Vendas
+│   ├── Sales.Web/             # API REST
+│   ├── Sales.Application/     # Casos de Uso e Entidades
+│   └── Sales.Infrastructure/  # Repositórios, RabbitMQ e HTTP Gateway
+└── docker-compose.yml         # SQL Server e RabbitMQ
 ```
 
-## 🚀 Funcionalidades Implementadas
+## 🚀 Funcionalidades
+
+### APIGateway
+- **Autenticação JWT**: Sistema de autenticação com tokens
+- **Rate Limiting**: Controle de taxa de requisições por endpoint
+- **Proxy Reverso**: Roteamento para microsserviços downstream
+- **Logging**: Middleware de logging de requisições
+- **Health Checks**: Monitoramento de saúde dos serviços
 
 ### Inventory Microservice
-- **Gestão de Produtos**: CRUD completo para produtos
+- **CRUD de Produtos**: Gestão completa de produtos
 - **Controle de Estoque**: Reserva, liberação e adição de estoque
-- **Validações de Negócio**: Regras para quantidade e preços
-- **API REST**: Endpoints para todas as operações
-- **Testes Unitários**: Cobertura completa dos métodos de negócio
-- **Middleware de Performance**: Monitoramento de tempo de resposta das requisições
+- **Validações**: Regras de negócio para quantidade e preços
+- **API REST**: `GET/POST/PUT/DELETE /api/v1/Product/*`
 
 ### Sales Microservice
-- **Gestão de Pedidos**: CRUD completo para pedidos de venda
-- **Controle de Status**: Estados do pedido (Created, Confirmed, Cancelled, Failed)
-- **Cálculo Automático**: Total do pedido baseado nos itens
-- **Validações de Negócio**: Regras para criação e atualização de pedidos
-- **API REST**: Endpoints para todas as operações de vendas
-- **Middleware de Performance**: Monitoramento de tempo de resposta das requisições
+- **CRUD de Pedidos**: Gestão completa de pedidos
+- **Estados do Pedido**: Created, Confirmed, Cancelled, Failed
+- **Integração com Inventory**: Verificação de estoque via HTTP
+- **Eventos RabbitMQ**: Publicação de eventos de pedidos criados
+- **API REST**: `GET/POST/PUT/DELETE /api/v1/Sales/*`
 
-### Endpoints da API Inventory
-- `GET /api/v1/Product/all-products` - Listar todos os produtos
-- `GET /api/v1/Product/product-by-id` - Buscar produto por ID
-- `POST /api/v1/Product/create-product` - Criar novo produto
-- `PUT /api/v1/Product/update-product` - Atualizar produto
-- `DELETE /api/v1/Product/remove-product` - Remover produto
+## 🛠️ Stack Tecnológico
 
-### Endpoints da API Sales
-- `GET /api/v1/Sales/all-sales` - Listar todos os pedidos
-- `GET /api/v1/Sales/get-by-id` - Buscar pedido por ID
-- `POST /api/v1/Sales/create-sale` - Criar novo pedido
-- `PUT /api/v1/Sales/update-sale` - Atualizar pedido
-- `DELETE /api/v1/Sales/remove-sale` - Remover pedido
+- **.NET 9.0** - Framework principal
+- **ASP.NET Core** - APIs REST
+- **Entity Framework Core** - ORM
+- **SQL Server 2022** - Banco de dados
+- **RabbitMQ** - Message broker
+- **JWT** - Autenticação
+- **Docker** - Containerização
 
-## 🛠️ Tecnologias e Infraestrutura
+## 🗄️ Infraestrutura
 
-### Stack Tecnológico
-- **.NET 9.0** - Framework principal para desenvolvimento das APIs
-- **ASP.NET Core** - Para criação das APIs REST
-- **Entity Framework Core 9.0** - ORM para acesso a dados
-- **SQL Server 2022** - Banco de dados relacional
-- **RabbitMQ** - Message broker para comunicação entre microsserviços
-- **Swagger/OpenAPI** - Documentação automática das APIs
-
-### Infraestrutura e Containerização
-- **Docker & Docker Compose** - Containerização e orquestração
-- **SQL Server**: `localhost:1433` (Usuário: `SA`, Senha: `Teste123!`)
-- **RabbitMQ Management**: `http://localhost:15672` (Usuário: `guest`, Senha: `guest`)
+### Serviços Docker
+- **SQL Server**: `localhost:1433` (SA/Teste123!)
+- **RabbitMQ**: `localhost:5672` + Management UI `localhost:15672`
 
 ### Bancos de Dados
-- **Inventory Database**: `InventoryDb`
-- **Sales Database**: `SalesDb`
-- **Connection String**: Configurada em `appsettings.json` de cada projeto
+- **InventoryDb**: Tabela `Products` (ProductId, Name, Description, Price, StockQuantity)
+- **SalesDb**: Tabelas `Orders` e `OrderItems` (OrderId, CustomerId, TotalAmount, Status)
 
-### Estrutura de Dados
-
-#### Inventory Database (InventoryDb)
-```sql
--- Tabela Products
-CREATE TABLE Products (
-    ProductId UNIQUEIDENTIFIER PRIMARY KEY,
-    Name NVARCHAR(100) NOT NULL,
-    Description NVARCHAR(MAX),
-    Price DECIMAL(18,2) NOT NULL,
-    StockQuantity INT NOT NULL
-);
-```
-
-#### Sales Database (SalesDb)
-```sql
--- Tabela Orders
-CREATE TABLE Orders (
-    OrderId UNIQUEIDENTIFIER PRIMARY KEY,
-    CustomerId UNIQUEIDENTIFIER NOT NULL,
-    TotalAmount DECIMAL(18,2) NOT NULL,
-    Status NVARCHAR(20) NOT NULL
-);
-
--- Tabela OrderItems
-CREATE TABLE OrderItems (
-    Id INT IDENTITY(1,1) PRIMARY KEY,
-    OrderId UNIQUEIDENTIFIER NOT NULL,
-    ProductId UNIQUEIDENTIFIER NOT NULL,
-    Quantity INT NOT NULL,
-    UnitPrice DECIMAL(18,2) NOT NULL,
-    FOREIGN KEY (OrderId) REFERENCES Orders(OrderId)
-);
-```
-
-### Testes
-- **xUnit** - Framework de testes unitários
-- **.NET Testing Framework** - Suporte nativo para testes
-
-## 🚀 Como Executar o Projeto
+## 🚀 Execução
 
 ### Pré-requisitos
-- [.NET 9.0 SDK](https://dotnet.microsoft.com/download/dotnet/9.0)
-- [Docker Desktop](https://www.docker.com/products/docker-desktop/)
-- [Visual Studio 2022](https://visualstudio.microsoft.com/) ou [JetBrains Rider](https://www.jetbrains.com/rider/) (recomendado)
+- .NET 9.0 SDK
+- Docker Desktop
 
-### 1. Configuração do Ambiente
+### 1. Infraestrutura
 ```bash
-# Clone o repositório
-git clone <url-do-repositorio>
-cd evanade_ms
-
-# Inicie os serviços de infraestrutura
+# Iniciar SQL Server e RabbitMQ
 docker-compose up -d
 ```
 
-### 2. Executando as APIs
-
-#### Opção A: Visual Studio/Rider
-1. Abra a solução `Inventory/Inventory.sln` ou `Sales/Sales.sln`
-2. Configure o projeto `*.Web` como projeto de inicialização
-3. Execute o projeto (F5)
-
-#### Opção B: CLI .NET
+### 2. APIs
 ```bash
-# Inventory API
+# APIGateway (porta 5000)
+cd APIGateway/APIGateway.Web
+dotnet run
+
+# Inventory (porta 5172)
 cd Inventory/Inventory/Inventory.Web
 dotnet run
 
-# Sales API (em outro terminal)
+# Sales (porta 5048)
 cd Sales/Sales/Sales.Web
 dotnet run
 ```
 
-### 3. Acessando as APIs
-- **Inventory API**: `https://localhost:5001` ou `http://localhost:5000`
-- **Sales API**: `https://localhost:5003` ou `http://localhost:5002`
-- **Swagger UI**: Adicione `/swagger` à URL da API
-- **Request Timing**: Todas as respostas incluem header `X-Response-Time-ms` com tempo de processamento
+### 3. Acesso
+- **APIGateway**: `https://localhost:5000` (Swagger na raiz)
+- **Inventory**: `https://localhost:5172/swagger`
+- **Sales**: `https://localhost:5048/swagger`
 
-## 🏛️ Arquitetura e Padrões
+## 🏛️ Padrões Arquiteturais
 
-Este projeto implementa os princípios da **Clean Architecture** e diversos padrões de desenvolvimento, garantindo alta qualidade e manutenibilidade do código.
+### Clean Architecture
+- **Web**: Controllers e DTOs
+- **Application**: Casos de uso e entidades de domínio
+- **Infrastructure**: Repositórios, HTTP clients e message brokers
 
-### Clean Architecture Implementada
+### Padrões Implementados
+- **Repository Pattern**: Abstração de acesso a dados
+- **Gateway Pattern**: Interface entre camadas
+- **CQRS**: Separação de comandos e consultas
+- **Event-Driven**: Comunicação assíncrona via RabbitMQ
+- **Circuit Breaker**: Resiliência em chamadas HTTP
 
-#### Camadas da Aplicação
-- **Web (Apresentação)**: Controllers, DTOs e configurações da API
-- **Application (Aplicação)**: Casos de uso, interfaces e regras de negócio
-- **Infrastructure (Infraestrutura)**: Acesso a dados, repositórios e serviços externos
-- **Tests**: Testes unitários e de integração
+### Entidades de Domínio
 
-#### Benefícios da Arquitetura
-- ✅ **Independência de Frameworks**: A lógica de negócio não depende de frameworks externos
-- ✅ **Testabilidade**: Fácil criação de testes unitários
-- ✅ **Independência de UI**: A interface pode mudar sem afetar o sistema
-- ✅ **Independência de Banco de Dados**: Pode trocar de SQL Server para outro SGBD
-- ✅ **Independência de Agentes Externos**: A lógica de negócio não conhece o mundo externo
+#### Product (Inventory)
+```csharp
+public class Product
+{
+    public void Reserve(int quantity)     // Reserva estoque
+    public void Release(int quantity)     // Libera estoque
+    public void AddStock(int quantity)    // Adiciona estoque
+    public void SetPrice(decimal price)   // Define preço
+}
+```
 
-### Padrões de Design Implementados
-- **Repository Pattern**: Abstração do acesso a dados
-- **Gateway Pattern**: Interface entre camadas de aplicação e infraestrutura
-- **Mapper Pattern**: Conversão entre entidades de domínio e persistência
-- **Dependency Inversion**: Dependências apontam para abstrações, não implementações
-- **Separation of Concerns**: Cada camada tem uma responsabilidade específica
-- **Single Responsibility**: Cada classe tem apenas uma razão para mudar
+#### Order (Sales)
+```csharp
+public class Order
+{
+    public void AddItem(Guid productId, int quantity, decimal price)
+    public void CalculateTotal()
+    public void Confirm()
+    public void Cancel(string reason)
+    public bool IsValid()
+}
+```
 
-### Validações de Negócio
-
-#### Inventory Microservice
-- **Product.Reserve()**: Valida quantidade positiva e disponibilidade de estoque
-- **Product.Release()**: Valida quantidade positiva para liberação
-- **Product.AddStock()**: Valida quantidade positiva para adição
-- **Product.SetPrice()**: Valida preço não negativo
-
-#### Sales Microservice
-- **Order.AddItem()**: Adiciona itens ao pedido com validações
-- **Order.CalculateTotal()**: Calcula total automaticamente baseado nos itens
-- **Order.Confirm()**: Altera status para confirmado
-- **Order.Cancel()**: Cancela pedido com motivo
-
-### Tratamento de Exceções
-- **DataAccessException**: Exceções customizadas para acesso a dados
-- **ArgumentException**: Validações de parâmetros de entrada
-- **InvalidOperationException**: Operações inválidas de negócio
-
-### Entidades e Value Objects
-
-#### Inventory Microservice
-- **Product**: Entidade principal com operações de estoque
-  - `Reserve(int quantity)`: Reserva estoque
-  - `Release(int quantity)`: Libera estoque
-  - `AddStock(int quantity)`: Adiciona estoque
-  - `SetPrice(decimal price)`: Define preço
-
-#### Sales Microservice
-- **Order**: Entidade principal de pedidos
-  - `AddItem(Guid productId, int quantity, decimal price)`: Adiciona item
-  - `CalculateTotal()`: Calcula total do pedido
-  - `Confirm()`: Confirma pedido
-  - `Cancel(string reason)`: Cancela pedido
-- **OrderItem**: Value Object para itens do pedido
-- **Status**: Enum com estados do pedido (Created, Confirmed, Cancelled, Failed)
-
-## 🧪 Testes Unitários
-
-O projeto implementa uma estratégia robusta de testes unitários utilizando **xUnit** e **Microsoft.NET.Test.Sdk**.
-
-### Cobertura de Testes Implementada
-
-#### Product Entity Tests
-- ✅ **Construtor**: Validação de criação com parâmetros válidos
-- ✅ **Reserve()**: Testes para reserva de estoque
-  - Quantidade válida (decrementa estoque)
-  - Quantidade inválida (0, negativa) - lança `ArgumentException`
-  - Quantidade maior que estoque - lança `InvalidOperationException`
-  - Quantidade exata do estoque disponível
-- ✅ **Release()**: Testes para liberação de estoque
-  - Quantidade válida (incrementa estoque)
-  - Quantidade inválida (0, negativa) - lança `ArgumentException`
-- ✅ **AddStock()**: Testes para adição de estoque
-  - Quantidade válida (incrementa estoque)
-  - Quantidade inválida (0, negativa) - lança `ArgumentException`
-- ✅ **SetPrice()**: Testes para definição de preço
-  - Preço válido (atualiza preço)
-  - Preço negativo - lança `ArgumentException`
-  - Preço zero (caso limite)
-- ✅ **Teste de Integração**: Múltiplas operações em sequência
-
-### Executando os Testes
+## 🧪 Testes
 
 ```bash
 # Executar todos os testes
 dotnet test
 
-# Executar testes de um projeto específico
-dotnet test Inventory/Inventory/Inventory.Tests/
-dotnet test Sales/Sales/Sales.Tests/
-
-# Executar testes com cobertura de código
+# Testes com cobertura
 dotnet test --collect:"XPlat Code Coverage"
-
-# Executar testes com output detalhado
-dotnet test --verbosity normal
 ```
 
-### Estrutura dos Testes
+**Cobertura**: Testes unitários para entidades de domínio (Product, Order) com validações de negócio.
+
+## ⚡ Performance
+
+- **Request Timing**: Middleware customizado mede tempo de resposta
+- **Headers**: `X-Response-Time-ms` em todas as respostas
+- **Rate Limiting**: Controle de taxa no APIGateway
+- **Circuit Breaker**: Resiliência em chamadas HTTP
+
+## 🔧 Configuração
+
+### APIGateway
+- **JWT Secret**: Configurado em `appsettings.json`
+- **Rate Limits**: Por endpoint (auth: 5/min, sales: 50/min, inventory: 100/min)
+- **Service URLs**: Inventory (5172), Sales (5048)
+
+### Connection Strings
+```json
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "Server=localhost,1433;Database=InventoryDb;User Id=SA;Password=Teste123!;TrustServerCertificate=true;"
+  }
+}
 ```
-Inventory.Tests/
-├── ApplicationTestes/
-│   └── Entities/
-│       └── ProductTest.cs    # Testes da entidade Product
-└── Inventory.Tests.csproj    # Configuração do projeto de testes
-```
-
-### Tecnologias de Teste
-- **xUnit 2.9.2** - Framework de testes
-- **Microsoft.NET.Test.Sdk 17.12.0** - SDK de testes
-- **coverlet.collector 6.0.2** - Coleta de cobertura de código
-- **xunit.runner.visualstudio 2.8.2** - Runner para Visual Studio
-
-## ⚡ Middlewares e Performance
-
-### RequestTimingMiddleware
-Ambos os microsserviços implementam um middleware customizado para monitoramento de performance:
-
-- **Funcionalidade**: Mede o tempo de processamento de cada requisição
-- **Header de Resposta**: `X-Response-Time-ms` com tempo em milissegundos
-- **Logging**: Registra o tempo de processamento nos logs da aplicação
-- **Implementação**: Usa `Stopwatch` para medição precisa do tempo
-
-### Benefícios
-- ✅ **Monitoramento em Tempo Real**: Visibilidade imediata da performance
-- ✅ **Debugging Facilitado**: Identificação rápida de requisições lentas
-- ✅ **Métricas de API**: Dados para análise de performance
-- ✅ **Headers Padronizados**: Compatível com ferramentas de monitoramento
-
-## 🤝 Contribuindo
-Sinta-se à vontade para abrir issues, sugerir melhorias ou enviar pull requests. Este projeto é um ponto de partida para soluções modernas e escaláveis!
 
 ---
 
-> "Transformando ideias em soluções escaláveis, um microserviço de cada vez."
+> **Avanade Challenge** - Arquitetura de microsserviços com Clean Architecture, comunicação assíncrona e padrões de resiliência.
 

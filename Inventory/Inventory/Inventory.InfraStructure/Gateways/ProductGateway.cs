@@ -44,6 +44,20 @@ public class ProductGateway : IProductGateway
         }
     }
 
+    public async Task UpdateQuantityProduct(int newQuantity, Guid productId)
+    {
+        try
+        {
+            await _repository.UpdateQuantityProduct(newQuantity, productId);
+            _logger.LogInformation("Update quantity product: {productId} to new quantity: {newQuantity}", productId, newQuantity);
+            return;
+        }
+        catch (SqlException ex)
+        {
+            throw new DataAccessException($"Error updating record into database ", ex);
+        }
+    }
+
     public async Task DeleteProduct(Product product)
     {
         try
