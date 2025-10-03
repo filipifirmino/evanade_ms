@@ -1,13 +1,8 @@
-﻿using Sales.Application.Enums;
-using Sales.Application.ValueObject;
+﻿using Sales.Web.Shared;
 
 namespace Sales.Web.ResquestsDto;
 
-public class OrderRequest
+public class OrderRequest : OrderDto
 {
-    public Guid OrderId { get; set; }
-    public Guid CustomerId { get; set; }
-    public  List<OrderItem> Items { get; set; } = new();
-    public decimal TotalAmount { get; set; }
-    public  Status Status { get; set; }
+    
 }

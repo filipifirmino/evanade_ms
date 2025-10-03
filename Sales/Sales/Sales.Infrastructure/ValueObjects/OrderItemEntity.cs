@@ -1,9 +1,13 @@
-﻿namespace Sales.Infrastructure.ValueObjects;
+﻿using Sales.Application.ValueObject;
 
-public class OrderItemEntity(Guid productId, int quantity, decimal unitPrice)
+namespace Sales.Infrastructure.ValueObjects;
+
+public class OrderItemEntity : OrderItem
 {
-    public Guid ProductId { get; set; } = productId;
     public Guid OrderId { get; set; }
-    public int Quantity { get; set; } = quantity;
-    public decimal UnitPrice { get; set; } = unitPrice;
+    
+    public OrderItemEntity(Guid productId, int quantity, decimal unitPrice) 
+        : base(productId, quantity, unitPrice)
+    {
+    }
 }

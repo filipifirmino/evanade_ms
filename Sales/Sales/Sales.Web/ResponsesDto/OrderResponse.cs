@@ -1,13 +1,8 @@
-﻿using Sales.Application.Enums;
-using Sales.Application.ValueObject;
+﻿using Sales.Web.Shared;
 
 namespace Sales.Web.ResponsesDto;
 
-public class OrderResponse
+public class OrderResponse : OrderDto
 {
-    public Guid OrderId { get; set; }
-    public Guid CustomerId { get; set; }
-    public  List<OrderItem> Items { get; set; } = new();
-    public decimal TotalAmount { get; set; }
-    public  Status Status { get; set; }
+    // Pode adicionar propriedades específicas de response aqui se necessário
 }

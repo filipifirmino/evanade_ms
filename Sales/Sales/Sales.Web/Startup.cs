@@ -18,13 +18,15 @@ public class Startup
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddControllers();
-        services.AddConfigureInfra();
+        services.AddConfigureInfra(_Configuration);
         services.AddApplicationConfiguration();
+        services.AddHttpClient();
         services.AddSwaggerGen(s =>
         {
             s.SwaggerDoc("v1", new OpenApiInfo { Title = "Sales API", Version = "v1" });
         });
-        services.AddDbContext<DataContext>();
+        services.AddDbContext<DataContext>(options =>
+            options.UseSqlServer(_Configuration.GetConnectionString("DefaultConnection")));
     }
     
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

@@ -9,6 +9,7 @@ public class Product
     public string Description { get; set; }
     public decimal Price { get; set; }
     public int StockQuantity { get; set; }
+    public int Reservation { get; set; }
 
     public Product(string name, string description, decimal price, int stockQuantity)
     {
@@ -18,7 +19,11 @@ public class Product
         Price = price;
         StockQuantity = stockQuantity;
     }
-    
+
+    public int GetStockAvailable()
+    {
+        return StockQuantity - Reservation;
+    }
     public void Reserve(int quantity)
     {
         if (quantity <= 0)

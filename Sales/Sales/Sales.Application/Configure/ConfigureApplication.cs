@@ -1,4 +1,6 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Sales.Application.UseCases;
+using Sales.Application.UseCases.Abstractions;
 
 namespace Sales.Application.Configure;
 
@@ -6,7 +8,8 @@ public static class ConfigureApplication
 {
     private static void ConfigureDependences(this IServiceCollection serviceCollection)
     {
-        //TODO: Adicionar injeções de dependência da camada Application
+        serviceCollection.AddScoped<IOrderProcess, OrderProcess>();
+        serviceCollection.AddScoped<IOrderConfirmedProcess, OrderConfirmedProcess>();
     }
     
     public static void AddApplicationConfiguration(this IServiceCollection serviceCollection)

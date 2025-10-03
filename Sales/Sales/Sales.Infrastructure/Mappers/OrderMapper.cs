@@ -12,7 +12,7 @@ public static class OrderMapper
             CustomerId = orderEntity.CustomerId,
             Items = orderEntity.Items.Select(item => item.ToDomain()).ToList(),
             TotalAmount =  orderEntity.TotalAmount,
-            Status = orderEntity.Status.ToOrderStatus()
+            Status = orderEntity.Status
         };
     
     public static OrderEntity ToEntity(this Order order)
@@ -22,6 +22,6 @@ public static class OrderMapper
             CustomerId = order.CustomerId,
             Items = order.Items.Select(x => x.ToEntity()).ToList(),
             TotalAmount =  order.TotalAmount,
-            Status = order.Status.ToStatusEntity()
+            Status = order.Status
         };
 }

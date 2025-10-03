@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using Inventory.Application.UseCases;
+using Inventory.Application.UseCases.Abstractions;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Inventory.Application.Configure;
 
@@ -6,7 +8,7 @@ public static class ConfigureApplication
 {
     private static void ConfigureDependences(this IServiceCollection serviceCollection)
     {
-        //TODO: Adicionar injeções de dependência da camada Application
+        serviceCollection.AddScoped<IProcessOrderCreated, ProcessOrderCreated>();
     }
     
     public static void AddApplicationConfiguration(this IServiceCollection serviceCollection)
