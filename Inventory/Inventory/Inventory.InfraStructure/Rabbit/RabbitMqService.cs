@@ -13,7 +13,7 @@ public class RabbitMqService : IRabbitMqService, IDisposable
 {
     private readonly RabbitMqSettings _settings;
     private readonly ILogger<RabbitMqService> _logger;
-    private readonly JsonSerializerOptions _jsonOptions;
+    private readonly JsonSerializerOptions _serializerOptions;
     private IConnection? _connection;
     private IModel? _channel;
     private bool _disposed;
@@ -22,7 +22,7 @@ public class RabbitMqService : IRabbitMqService, IDisposable
     {
         _settings = options.Value;
         _logger = logger;
-        _jsonOptions = new JsonSerializerOptions
+        _serializerOptions = new JsonSerializerOptions
         {
             PropertyNameCaseInsensitive = true,
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
@@ -52,21 +52,50 @@ public class RabbitMqService : IRabbitMqService, IDisposable
         }
     }
 
-    public void Publish(string queueName, string message)
+
+    public void Publish<T>(string queueName, T message) where T : class
     {
         try
         {
-            EnsureConnection();
-            _channel!.QueueDeclare(queueName, true, false, false, null);
-            var body = Encoding.UTF8.GetBytes(message);
-            var properties = _channel.CreateBasicProperties();
-            properties.Persistent = true;
-            _channel.BasicPublish("", queueName, properties, body);
+            var messageJson = JsonSerializer.Serialize(message, _serializerOptions);
+            PublishToQueue(queueName, messageJson, "application/json");
+            
+            _logger.LogDebug("Mensagem tipada publicada na fila {QueueName}: {Message}", 
+                queueName, messageJson);
         }
         catch (Exception ex)
         {
-            throw new Exception($"Erro ao publicar mensagem: {ex.Message}", ex);
+            _logger.LogError(ex, "Erro ao publicar mensagem tipada na fila {QueueName}: {Message}", queueName, ex.Message);
+            throw new Exception($"Erro ao publicar mensagem tipada: {ex.Message}", ex);
         }
+    }
+
+    private void PublishToQueue(string queueName, string messageContent, string contentType = "text/plain")
+    {
+        EnsureConnection();
+        
+        if (_channel == null) return;
+        
+        // Configuração para compatibilidade com Sales
+        const string exchangeName = "inventory-exchange";
+        const string routingKey = "inventory.stock.updated";
+        
+        // Declarar exchange
+        _channel.ExchangeDeclare(exchangeName, ExchangeType.Direct, true);
+        
+        // Declarar fila
+        _channel.QueueDeclare(queueName, true, false, false, null);
+        
+        // Vincular fila ao exchange
+        _channel.QueueBind(queueName, exchangeName, routingKey);
+        
+        var body = Encoding.UTF8.GetBytes(messageContent);
+        var properties = _channel.CreateBasicProperties();
+        properties.Persistent = true;
+        properties.ContentType = contentType;
+        
+        // Publicar usando exchange e routing key
+        _channel.BasicPublish(exchangeName, routingKey, properties, body);
     }
 
 
@@ -87,7 +116,7 @@ public class RabbitMqService : IRabbitMqService, IDisposable
                     
                     _logger.LogDebug("Mensagem JSON recebida: {MessageJson}", messageJson);
                     
-                    var message = JsonSerializer.Deserialize<T>(messageJson, _jsonOptions);
+                    var message = JsonSerializer.Deserialize<T>(messageJson, _serializerOptions);
                     
                     if (message != null)
                     {

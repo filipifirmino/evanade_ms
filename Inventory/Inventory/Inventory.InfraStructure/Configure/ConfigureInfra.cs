@@ -20,14 +20,14 @@ public static class ConfigureInfra
 
     private static void AddRepository(this IServiceCollection services)
     {
-        services.AddScoped(typeof(IRepositoryBase<>), typeof(RepositoreBase<>));
+        services.AddScoped(typeof(IRepositoryBase<>), typeof(RepositoryBase<>));
         services.AddScoped<IProductRepository, ProductRepository>();
     }
 
     private static void AddRabbitMq(this IServiceCollection services)
     {
         services.AddSingleton<IRabbitMqService, RabbitMqService>();
-        services.AddTransient<OrderConfirmedPublisher>();
+        services.AddTransient<IOrderConfirmedPublisher, OrderConfirmedPublisher>();
         services.AddTransient<OrderSubscriber>();
         services.AddHostedService<RabbitMqBackgroundService>();
     }

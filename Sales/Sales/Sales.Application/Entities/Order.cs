@@ -28,7 +28,7 @@ public class Order
     public void Cancel(string reason)
     {
         Status = Status.Cancelled;
-        var reasonMessage = $"Order {OrderId} was cancelled. Reason: {reason}";
+        // TODO: Implementar log ou notificação de cancelamento
     }
     
     public bool IsValid()

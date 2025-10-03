@@ -1,6 +1,6 @@
 ﻿using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
-using Sales.Application.Setings;
+using Sales.Application.Settings;
 using Sales.Infrastructure.Rabbit;
 
 namespace Sales.Infrastructure.Rabbit;
@@ -46,7 +46,7 @@ public class RabbitMqConnection: IRabbitMqConnection, IDisposable
             VirtualHost = _settings.VirtualHost,
             AutomaticRecoveryEnabled = _settings.AutomaticRecoveryEnabled,
             NetworkRecoveryInterval = _settings.NetworkRecoveryInterval,
-            DispatchConsumersAsync = true
+            DispatchConsumersAsync = false
         };
 
         _connection = factory.CreateConnection();

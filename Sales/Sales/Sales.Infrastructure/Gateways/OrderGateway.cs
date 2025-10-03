@@ -1,6 +1,7 @@
 ﻿using Microsoft.Data.SqlClient;
 using Sales.Application.AbstractionsGateways;
 using Sales.Application.Entities;
+using Sales.Application.Enums;
 using Sales.Infrastructure.Mappers;
 using Sales.Infrastructure.Repositories.Abstractions;
 using Sales.Infrastructure.Tools;
@@ -56,6 +57,14 @@ public class OrderGateway : IOrderGateway
         );
     }
 
+    public async Task UpdateOrderStatus(Guid orderId, Status status)
+    {
+        await ExecuteDatabaseOperation(
+            () => _orderRepository.UpdateOrderStatus(orderId, status),
+            "Error updating order status"
+        );
+    }
+
     private async Task<T> ExecuteDatabaseOperation<T>(Func<Task<T>> operation, string errorMessage)
     {
         try
@@ -68,15 +77,10 @@ public class OrderGateway : IOrderGateway
         }
     }
 
-    private async Task ExecuteDatabaseOperation(Func<Task> operation, string errorMessage)
-    {
-        try
+    private Task ExecuteDatabaseOperation(Func<Task> operation, string errorMessage)
+        => ExecuteDatabaseOperation(async () =>
         {
             await operation();
-        }
-        catch (SqlException ex)
-        {
-            throw new DataAccessException(errorMessage, ex);
-        }
-    }
+            return Task.CompletedTask;
+        }, errorMessage);
 }

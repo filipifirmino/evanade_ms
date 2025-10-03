@@ -19,84 +19,134 @@ public class GatewayController: ControllerBase
             _logger = logger;
         }
         
-        // SALES
         [HttpPost("sales/orders")]
-        [Authorize(Roles = "User")]
+        [Authorize(Roles = "User,Admin")]
         public async Task<IActionResult> CreateOrder([FromBody] OrderRequest orderRequest)
         {
-            return await HandleProxyRequest("SalesService", "sales/orders", HttpMethod.Post);
+            return await HandleProxyRequest("SalesService", "create-order", HttpMethod.Post);
         }
 
         [HttpGet("sales/orders/{id}")]
         [Authorize(Roles = "User,Admin")]
         public async Task<IActionResult> GetOrderById(string id)
         {
-            return await HandleProxyRequest("SalesService", $"sales/orders/{id}", HttpMethod.Get);
+            return await HandleProxyRequest("SalesService", "get-by-id", HttpMethod.Get, id);
         }
 
         [HttpGet("sales/orders")]
         [Authorize(Roles = "User,Admin")]
         public async Task<IActionResult> ListOrders()
         {
-            // Query string é preservada pelo HttpContext, montada no HandleProxyRequest
-            return await HandleProxyRequest("SalesService", "sales/orders", HttpMethod.Get);
+            return await HandleProxyRequest("SalesService", "all-order", HttpMethod.Get);
         }
 
-        // STOCK / INVENTORY
+        [HttpPut("sales/orders/{id}")]
+        [Authorize(Roles = "User,Admin")]
+        public async Task<IActionResult> UpdateOrder(string id, [FromBody] OrderRequest orderRequest)
+        {
+            return await HandleProxyRequest("SalesService", "update-order", HttpMethod.Put, id);
+        }
+
+        [HttpDelete("sales/orders")]
+        [Authorize(Roles = "User,Admin")]
+        public async Task<IActionResult> DeleteOrder([FromBody] OrderRequest orderRequest)
+        {
+            return await HandleProxyRequest("SalesService", "remove-order", HttpMethod.Delete);
+        }
+
+      
         [HttpPost("inventory/products")]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> CreateProduct()
+        public async Task<IActionResult> CreateProduct([FromBody] ProductRequest productRequest)
         {
-            return await HandleProxyRequest("InventoryService", "inventory/products", HttpMethod.Post);
+            return await HandleProxyRequest("InventoryService", "create-product", HttpMethod.Post);
         }
 
         [HttpGet("inventory/products")]
         [Authorize(Roles = "User,Admin")]
         public async Task<IActionResult> ListProducts()
         {
-            return await HandleProxyRequest("InventoryService", "inventory/products", HttpMethod.Get);
+            return await HandleProxyRequest("InventoryService", "all-products", HttpMethod.Get);
         }
 
-        [HttpGet("inventory/products/{sku}")]
+        [HttpGet("inventory/products/{id}")]
         [Authorize(Roles = "User,Admin")]
-        public async Task<IActionResult> GetProductBySku(string sku)
+        public async Task<IActionResult> GetProductById(string id)
         {
-            return await HandleProxyRequest("InventoryService", $"inventory/products/{sku}", HttpMethod.Get);
+            return await HandleProxyRequest("InventoryService", "product-by-id", HttpMethod.Get, id);
         }
 
-        [HttpPut("inventory/products/{sku}")]
-        [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> UpdateProduct(string sku)
+        [HttpGet("inventory/products/{id}/quantity")]
+        [Authorize(Roles = "User,Admin")]
+        public async Task<IActionResult> GetProductQuantity(string id)
         {
-            return await HandleProxyRequest("InventoryService", $"inventory/products/{sku}", HttpMethod.Put);
+            return await HandleProxyRequest("InventoryService", "quantity-available-product-by-id", HttpMethod.Get, id);
+        }
+
+        [HttpPut("inventory/products")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> UpdateProduct([FromBody] ProductRequest productRequest)
+        {
+            return await HandleProxyRequest("InventoryService", "update-product", HttpMethod.Put);
+        }
+
+        [HttpDelete("inventory/products")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> DeleteProduct([FromBody] ProductRequest productRequest)
+        {
+            return await HandleProxyRequest("InventoryService", "remove-product", HttpMethod.Delete);
         }
         
         private async Task<IActionResult> HandleProxyRequest(string serviceName, 
-            string path, HttpMethod method)
+            string path, HttpMethod method, string parameter = null)
         {
             try
             {
-                // Montar fullPath com query string preservada
-                var basePath = $"/api/{path}";
-                var queryString = Request.QueryString.HasValue ? Request.QueryString.Value : string.Empty;
-                var fullPath = string.Concat(basePath, queryString);
+                var fullPath = $"/{path}{Request.QueryString}";
                 var headers = ExtractHeaders();
-                var body = method != HttpMethod.Get ? await ExtractBodyAsync() : null;
                 
-                _logger.LogInformation($"Proxying {method} request to {serviceName}: {fullPath}");
+                // Adicionar parâmetro como header se necessário
+                if (!string.IsNullOrEmpty(parameter) && Guid.TryParse(parameter, out _))
+                {
+                    headers["id"] = parameter;
+                }
+                
+                var body = method != HttpMethod.Get ? await ExtractBodyAsync() : null;
                 
                 var response = await _proxyService.ForwardRequestAsync(
                     serviceName, fullPath, method, body, headers);
                 
-                return StatusCode(response.StatusCode, 
-                    string.IsNullOrEmpty(response.Content) ? null : 
-                    System.Text.Json.JsonSerializer.Deserialize<object>(response.Content));
+                return HandleResponse(response);
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, $"Error handling proxy request for {serviceName}");
                 return StatusCode(500, new { message = "Internal server error" });
             }
+        }
+        
+        private IActionResult HandleResponse(ProxyResponse response)
+        {
+            if (string.IsNullOrEmpty(response.Content))
+            {
+                return StatusCode(response.StatusCode);
+            }
+            
+            // Tentar deserializar como JSON
+            if (response.Content.TrimStart().StartsWith("{") || response.Content.TrimStart().StartsWith("["))
+            {
+                try
+                {
+                    return StatusCode(response.StatusCode, 
+                        System.Text.Json.JsonSerializer.Deserialize<object>(response.Content));
+                }
+                catch (System.Text.Json.JsonException)
+                {
+                    // Fallback para texto simples
+                }
+            }
+            
+            return StatusCode(response.StatusCode, new { message = response.Content });
         }
         
         private Dictionary<string, string> ExtractHeaders()

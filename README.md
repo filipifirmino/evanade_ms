@@ -30,13 +30,14 @@ Sistema de microsserviços para gestão de inventário e vendas com API Gateway,
 - **CRUD de Produtos**: Gestão completa de produtos
 - **Controle de Estoque**: Reserva, liberação e adição de estoque
 - **Validações**: Regras de negócio para quantidade e preços
+- **Eventos RabbitMQ**: Consumo de eventos OrderCreated e publicação de OrderConfirmed
 - **API REST**: `GET/POST/PUT/DELETE /api/v1/Product/*`
 
 ### Sales Microservice
 - **CRUD de Pedidos**: Gestão completa de pedidos
 - **Estados do Pedido**: Created, Confirmed, Cancelled, Failed
 - **Integração com Inventory**: Verificação de estoque via HTTP
-- **Eventos RabbitMQ**: Publicação de eventos de pedidos criados
+- **Eventos RabbitMQ**: Publicação de eventos OrderCreated e consumo de OrderConfirmed
 - **API REST**: `GET/POST/PUT/DELETE /api/v1/Sales/*`
 
 ## 🛠️ Stack Tecnológico
@@ -91,6 +92,22 @@ dotnet run
 - **Inventory**: `https://localhost:5172/swagger`
 - **Sales**: `https://localhost:5048/swagger`
 
+## 🔄 Comunicação Assíncrona
+
+### Fluxo RabbitMQ
+```
+Sales → [PUBLICA] → order-created-queue → [CONSUME] → Inventory
+Sales ← [CONSUME] ← inventory-stock-update-confirmed ← [PUBLICA] ← Inventory
+```
+
+### Eventos
+- **OrderCreated**: Publicado pelo Sales quando um pedido é criado
+- **OrderConfirmed**: Publicado pelo Inventory após confirmar estoque
+
+### Filas Configuradas
+- **order-created-queue**: Sales publica, Inventory consome
+- **inventory-stock-update-confirmed**: Inventory publica, Sales consome
+
 ## 🏛️ Padrões Arquiteturais
 
 ### Clean Architecture
@@ -104,6 +121,7 @@ dotnet run
 - **CQRS**: Separação de comandos e consultas
 - **Event-Driven**: Comunicação assíncrona via RabbitMQ
 - **Circuit Breaker**: Resiliência em chamadas HTTP
+- **Clean Code**: Nomenclatura consistente, DRY principle, código limpo
 
 ### Entidades de Domínio
 
@@ -142,6 +160,25 @@ dotnet test --collect:"XPlat Code Coverage"
 
 **Cobertura**: Testes unitários para entidades de domínio (Product, Order) com validações de negócio.
 
+## 🔧 Melhorias Implementadas
+
+### Clean Code
+- **Nomenclatura**: Padronização de nomes de variáveis e métodos
+- **DRY Principle**: Eliminação de código duplicado
+- **Correções**: Correção de typos em nomes de classes e métodos
+- **Interfaces**: Simplificação e alinhamento de contratos
+
+### RabbitMQ
+- **Configuração Otimizada**: Separação clara entre publishers e consumers
+- **Error Handling**: Tratamento robusto de erros de deserialização
+- **Logging**: Logs detalhados para debugging
+- **Performance**: Configuração otimizada de consumers assíncronos
+
+### Estrutura de Projeto
+- **Organização**: Melhor organização de arquivos e namespaces
+- **Dependências**: Configuração limpa de injeção de dependência
+- **Configurações**: Centralização de configurações RabbitMQ
+
 ## ⚡ Performance
 
 - **Request Timing**: Middleware customizado mede tempo de resposta
@@ -161,6 +198,33 @@ dotnet test --collect:"XPlat Code Coverage"
 {
   "ConnectionStrings": {
     "DefaultConnection": "Server=localhost,1433;Database=InventoryDb;User Id=SA;Password=Teste123!;TrustServerCertificate=true;"
+  }
+}
+```
+
+### RabbitMQ Configuration
+```json
+{
+  "RabbitMQ": {
+    "HostName": "localhost",
+    "UserName": "guest",
+    "Password": "guest",
+    "VirtualHost": "/",
+    "Port": 5672,
+    "AutomaticRecoveryEnabled": true,
+    "NetworkRecoveryInterval": "00:00:10",
+    "Queues": [
+      {
+        "Name": "order-created-queue",
+        "Exchange": "order-exchange",
+        "RoutingKey": "order.created"
+      },
+      {
+        "Name": "inventory-stock-update-confirmed",
+        "Exchange": "inventory-exchange", 
+        "RoutingKey": "inventory.stock.updated"
+      }
+    ]
   }
 }
 ```

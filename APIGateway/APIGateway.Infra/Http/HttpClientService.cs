@@ -58,20 +58,12 @@ namespace APIGateway.Infra.Http
                 // Montar caminho downstream usando DownstreamBasePath
                 var downstreamBasePath = _routeConfigurationService.GetDownstreamBasePath(serviceName);
                 var relativePath = path;
+                
                 if (!string.IsNullOrWhiteSpace(downstreamBasePath))
                 {
-                    // path esperado: "/api/{public}/..."; remover "/api/{public}/"
-                    if (relativePath.StartsWith("/api/", StringComparison.OrdinalIgnoreCase))
-                    {
-                        relativePath = relativePath.Substring(5);
-                    }
-                    var firstSlash = relativePath.IndexOf('/') ;
-                    if (firstSlash >= 0)
-                    {
-                        relativePath = relativePath.Substring(firstSlash + 1);
-                    }
-                    // Combinar com downstream base, garantindo uma única barra
-                    relativePath = $"/{downstreamBasePath.Trim('/')}" + (string.IsNullOrEmpty(relativePath) ? string.Empty : $"/{relativePath}");
+                    var cleanBasePath = downstreamBasePath.Trim('/');
+                    var cleanRelativePath = relativePath.Trim('/');
+                    relativePath = $"/{cleanBasePath}/{cleanRelativePath}";
                 }
 
                 var request = CreateHttpRequestMessage(relativePath, method, body, headers);

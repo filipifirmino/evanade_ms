@@ -2,6 +2,7 @@
 using Inventory.InfraStructure.Configure;
 using Inventory.InfraStructure.Rabbit;
 using Inventory.Web.Middlewares;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 
 namespace Inventory.Web;
@@ -25,7 +26,8 @@ public class Startup
         {
             s.SwaggerDoc("v1", new OpenApiInfo { Title = "Inventory API", Version = "v1" });
         });
-        services.AddDbContext<DataContext>();
+        services.AddDbContext<DataContext>(options =>
+            options.UseSqlServer(_Configuration.GetConnectionString("DefaultConnection")));
         
     }
 

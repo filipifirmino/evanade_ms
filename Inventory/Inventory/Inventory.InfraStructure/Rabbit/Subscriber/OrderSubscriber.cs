@@ -2,7 +2,7 @@
 using Inventory.Application.Events;
 using Inventory.Application.Events.Abstractions;
 using Inventory.Application.UseCases.Abstractions;
-using Inventory.InfraStructure.Rabbit.Messages;
+using Inventory.InfraStructure.Rabbit.Bases;
 using Microsoft.Extensions.Logging;
 
 namespace Inventory.InfraStructure.Rabbit.Subscriber;
@@ -26,9 +26,8 @@ public class OrderSubscriber : BaseSubscriber<OrderCreatedEvent>
         {
             _logger.LogInformation("Mensagem recebida na fila 'order-created-queue': {message}", @message);
             Console.WriteLine($"Pedido recebido: {message}");
-
-            // Executar de forma assíncrona sem bloquear
-            Task.Run(async () => await _processOrderCreated.ExectuteAsync(message.Items));
+            
+            Task.Run(async () => await _processOrderCreated.ExecuteAsync(message));
         }
         catch (Exception ex)
         {

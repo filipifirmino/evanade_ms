@@ -55,30 +55,16 @@ public class OrderController : ControllerBase
     [Route("update-order")]
     public async Task<IActionResult> Update([FromHeader] Guid id, [FromBody] OrderRequest request)
     {
-        try
-        {
-            await _orderGateway.UpdateOrder(request.ToOrder());
-            return Ok(new { message = "Order updated successfully" });
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, new { message = "Error updating order", details = ex.Message });
-        }
+        await _orderGateway.UpdateOrder(request.ToOrder());
+        return Ok(new { message = "Order updated successfully" });
     }
 
     [HttpDelete]
     [Route("remove-order")]
     public async Task<IActionResult> Delete([FromBody] OrderRequest request)
     {
-        try
-        {
-            await _orderGateway.DeleteOrder(request.ToOrder());
-            return Ok(new { message = "Order deleted successfully" });
-        }
-        catch (Exception ex)
-        {
-            return StatusCode(500, new { message = "Error deleting order", details = ex.Message });
-        }
+        await _orderGateway.DeleteOrder(request.ToOrder());
+        return Ok(new { message = "Order deleted successfully" });
     }
 
     

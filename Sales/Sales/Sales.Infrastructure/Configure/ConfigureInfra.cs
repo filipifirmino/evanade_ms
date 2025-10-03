@@ -1,8 +1,11 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Configuration;
 using Sales.Application.AbstractionsGateways;
 using Sales.Application.AbstractionRabbit;
-using Sales.Application.Handlers;
-using Sales.Application.Setings;
+using Sales.Application.Events;
+using Sales.Application.Settings;
+using Sales.Application.UseCases.Abstractions;
+using Sales.Application.UseCases;
 using Sales.Infrastructure.Gateways;
 using Sales.Infrastructure.Rabbit;
 using Sales.Infrastructure.Rabbit.BackgroundServices;
@@ -29,28 +32,25 @@ public static class ConfigureInfra
 
     private static void AddRabbitMq(this IServiceCollection services)
     {
-        // Conexão RabbitMQ
         services.AddSingleton<IRabbitMqConnection, RabbitMqConnection>();
-
-        // Message Producer
         services.AddScoped<IMessageProducer, MessageProducer>();
-        
-        // Generic Event Producer
         services.AddScoped<IGenericEventProducer, GenericEventProducer>();
-
-
-        // Message Consumers (genéricos)
         services.AddScoped(typeof(IMessageConsumer<>), typeof(MessageConsumer<>));
-
+        
+        // UseCase para OrderConfirmed
+        services.AddScoped<IOrderConfirmedProcess, OrderConfirmedProcess>();
+        
         // Handlers específicos
-        services.AddScoped<IMessageHandle<Sales.Application.Events.OrderCreated>, OrderCreatedHandler>();
-
-        // Background Service para gerenciar consumers
+        services.AddScoped<IMessageHandle<OrderConfirmed>, OrderConfirmedSubscriber>();
+        
         services.AddHostedService<RabbitMqBackgroundService>();
     }
 
-    public static void  AddConfigureInfra(this IServiceCollection services)
+    public static void AddConfigureInfra(this IServiceCollection services, IConfiguration configuration)
     {
+        // Configurar RabbitMQ
+        services.Configure<RabbitMq>(configuration.GetSection(RabbitMq.SectionName));
+        
         services.AddGateway();
         services.AddRepository();
         services.AddRabbitMq();

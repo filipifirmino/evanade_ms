@@ -9,6 +9,7 @@ public static class ConfigureApplication
     private static void ConfigureDependences(this IServiceCollection serviceCollection)
     {
         serviceCollection.AddScoped<IOrderProcess, OrderProcess>();
+        serviceCollection.AddScoped<IOrderConfirmedProcess, OrderConfirmedProcess>();
     }
     
     public static void AddApplicationConfiguration(this IServiceCollection serviceCollection)

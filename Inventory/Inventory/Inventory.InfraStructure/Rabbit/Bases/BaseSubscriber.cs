@@ -1,6 +1,6 @@
 ﻿using Inventory.Application.Events.Abstractions;
 
-namespace Inventory.InfraStructure.Rabbit.Messages;
+namespace Inventory.InfraStructure.Rabbit.Bases;
 
 public abstract class BaseSubscriber<T> where T : class {
     private readonly IRabbitMqService _service;

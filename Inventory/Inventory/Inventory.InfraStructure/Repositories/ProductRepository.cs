@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Inventory.InfraStructure.Repositories;
 
 public class ProductRepository(DataContext context) 
-    : RepositoreBase<ProductEntity>(context), IProductRepository
+    : RepositoryBase<ProductEntity>(context), IProductRepository
 {
     private readonly DataContext _context1 = context;
 

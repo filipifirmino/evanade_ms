@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 using Sales.Application.AbstractionRabbit;
-using Sales.Application.Setings;
+using Sales.Application.Settings;
 using Sales.Infrastructure.Rabbit;
 
 namespace Sales.Infrastructure.Rabbit.Producers;
@@ -53,9 +53,6 @@ public class MessageProducer : IMessageProducer
             channel.QueueBind(queue: queueName, exchange: exchange, routingKey: routingKey);
 
             await PublishMessageAsync(channel, message, exchange, routingKey, cancellationToken);
-            
-            _logger.LogInformation("Mensagem publicada no exchange {Exchange} com routing key {RoutingKey} para fila {QueueName}", 
-                exchange, routingKey, queueName);
         }
         catch (Exception ex)
         {

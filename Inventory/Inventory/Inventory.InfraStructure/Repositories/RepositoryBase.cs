@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Inventory.InfraStructure.Repositories;
 
-public class RepositoreBase<T>(DataContext context) : IRepositoryBase<T>
+public class RepositoryBase<T>(DataContext context) : IRepositoryBase<T>
     where T : class
 {
     public virtual async Task<IEnumerable<T>> GetAllAsync()

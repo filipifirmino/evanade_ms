@@ -1,4 +1,4 @@
-﻿namespace Sales.Application.Setings;
+﻿namespace Sales.Application.Settings;
 
 public class RabbitMq
 {

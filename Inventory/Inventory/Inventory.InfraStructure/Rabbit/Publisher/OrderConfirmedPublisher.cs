@@ -1,13 +1,11 @@
-﻿using Inventory.Application.Events.Abstractions;
-using Inventory.InfraStructure.Rabbit.Messages;
+﻿using Inventory.Application.Events;
+using Inventory.Application.Events.Abstractions;
+using Inventory.InfraStructure.Rabbit.Bases;
 
 namespace Inventory.InfraStructure.Rabbit.Publisher;
 
-public class OrderConfirmedPublisher : BasePublisher
+public class OrderConfirmedPublisher(IRabbitMqService service)
+    : BasePublisher<StockUpdateConfirmedEvent>(service), IOrderConfirmedPublisher
 {
-    public OrderConfirmedPublisher(IRabbitMqService service) : base(service)
-    {
-    }
-    protected override string QueueName => "order-confirmed";
-    
+    protected override string QueueName => "inventory-stock-update-confirmed";
 }

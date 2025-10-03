@@ -30,9 +30,10 @@ namespace APIGateway.Infra.Configuration
 
             foreach (var route in routes)
             {
-                // Verificar se a rota corresponde ao template
-                if (IsRouteMatch(route.Template, path) && 
-                    route.Methods.Contains(method.Method))
+                bool matches = IsRouteMatch(route.Template, path);
+                bool methodAllowed = route.Methods.Contains(method.Method);
+                
+                if (matches && methodAllowed)
                 {
                     return true;
                 }
@@ -58,38 +59,12 @@ namespace APIGateway.Infra.Configuration
 
         private bool IsRouteMatch(string template, string path)
         {
-            // Remover o prefixo /api/ caso exista
-            if (path.StartsWith("/api/"))
-            {
-                path = path.Substring(5);
-            }
+            // Normalizar o path removendo barras no início
+            path = path.TrimStart('/');
+            template = template.TrimStart('/');
 
-            // Dividir a rota e o template em segmentos
-            var routeSegments = path.Split('/');
-            var templateSegments = template.Split('/');
-
-            if (routeSegments.Length != templateSegments.Length)
-            {
-                return false;
-            }
-
-            for (int i = 0; i < templateSegments.Length; i++)
-            {
-                var templateSegment = templateSegments[i];
-                var routeSegment = routeSegments[i];
-
-                // Se o segmento é um parâmetro (entre chaves {param})
-                if (templateSegment.StartsWith("{") && templateSegment.EndsWith("}"))
-                {
-                    continue; // Considerar correspondência para qualquer valor
-                }
-                else if (templateSegment != routeSegment)
-                {
-                    return false; // Não corresponde
-                }
-            }
-
-            return true;
+            // Fazer comparação direta simples
+            return string.Equals(template, path, StringComparison.OrdinalIgnoreCase);
         }
 
         private void InitializeRoutes()

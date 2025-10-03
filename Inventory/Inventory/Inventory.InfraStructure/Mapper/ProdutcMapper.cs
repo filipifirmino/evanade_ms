@@ -12,12 +12,15 @@ public static class ProductMapper
             Name = product.Name,
             Description = product.Description,
             Price = product.Price,
-            StockQuantity = product.StockQuantity
+            StockQuantity = product.StockQuantity,
+            Reservation = product.Reservation
         };
 
     public static Product ToProduct(this ProductEntity entity)
         => new Product (entity.Name,entity.Description, entity.Price, entity.StockQuantity)
         {
-            ProductId = entity.ProductId
+            ProductId = entity.ProductId,
+            Reservation = entity.Reservation
+            
         };
 }

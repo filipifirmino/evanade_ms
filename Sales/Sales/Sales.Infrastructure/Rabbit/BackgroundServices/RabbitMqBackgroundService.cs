@@ -3,7 +3,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Sales.Application.AbstractionRabbit;
-using Sales.Application.Setings;
+using Sales.Application.Events;
+using Sales.Application.Settings;
 
 namespace Sales.Infrastructure.Rabbit.BackgroundServices;
 
@@ -26,11 +27,18 @@ public class RabbitMqBackgroundService : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        _logger.LogInformation("Iniciando RabbitMQ Background Service");
+        _logger.LogInformation("=== INICIANDO RABBITMQ BACKGROUND SERVICE ===");
+        _logger.LogInformation("Configurações carregadas: HostName={HostName}, Port={Port}, Queues={QueueCount}", 
+            _settings.HostName, _settings.Port, _settings.Queues.Count);
 
         try
         {
+            // Aguarda um pouco para garantir que todos os serviços estejam prontos
+            await Task.Delay(TimeSpan.FromSeconds(5), stoppingToken);
+            
             await StartConsumersAsync(stoppingToken);
+            
+            _logger.LogInformation("=== RABBITMQ BACKGROUND SERVICE INICIADO COM SUCESSO ===");
             
             // Mantém o serviço rodando
             while (!stoppingToken.IsCancellationRequested)
@@ -54,7 +62,7 @@ public class RabbitMqBackgroundService : BackgroundService
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "Erro no RabbitMQ Background Service");
+            _logger.LogError(ex, "Erro no RabbitMQ Background Service: {ErrorMessage}", ex.Message);
         }
         finally
         {
@@ -69,11 +77,14 @@ public class RabbitMqBackgroundService : BackgroundService
         // Mapeamento de filas para tipos de eventos
         var queueTypeMapping = new Dictionary<string, Type>
         {
-            { "order-created-queue", typeof(Sales.Application.Events.OrderCreated) }
+            { "inventory-stock-update-confirmed", typeof(OrderConfirmed) }
         };
+        
+        _logger.LogInformation("Iniciando consumers para {QueueCount} filas", _settings.Queues.Count);
         
         foreach (var queueConfig in _settings.Queues)
         {
+                
             try
             {
                 if (queueTypeMapping.TryGetValue(queueConfig.Name, out var eventType))
@@ -81,24 +92,19 @@ public class RabbitMqBackgroundService : BackgroundService
                     var consumerType = typeof(IMessageConsumer<>).MakeGenericType(eventType);
                     var consumer = scope.ServiceProvider.GetRequiredService(consumerType);
                     
-                    if (consumer != null)
+                    var startMethod = consumer.GetType().GetMethod("StartAsync");
+                    var startConsumingMethod = consumer.GetType().GetMethod("StartConsumingAsync", new[] { typeof(string), typeof(string), typeof(string), typeof(CancellationToken) });
+                    
+                    if (startMethod != null && startConsumingMethod != null)
                     {
-                        // Usar reflexão para chamar os métodos
-                        var startMethod = consumerType.GetMethod("StartAsync");
-                        var startConsumingMethod = consumerType.GetMethod("StartConsumingAsync", new[] { typeof(string), typeof(string), typeof(string), typeof(CancellationToken) });
+                        await (Task)startMethod.Invoke(consumer, new object[] { cancellationToken })!;
+                        await (Task)startConsumingMethod.Invoke(consumer, new object[] { queueConfig.Name, queueConfig.Exchange, queueConfig.RoutingKey, cancellationToken })!;
                         
-                        if (startMethod != null && startConsumingMethod != null)
+                        if (consumer is IMessageConsumer messageConsumer)
                         {
-                            await (Task)startMethod.Invoke(consumer, new object[] { cancellationToken })!;
-                            await (Task)startConsumingMethod.Invoke(consumer, new object[] { queueConfig.Name, queueConfig.Exchange, queueConfig.RoutingKey, cancellationToken })!;
-                            
-                            if (consumer is IMessageConsumer messageConsumer)
-                            {
-                                _consumers.Add(messageConsumer);
-                            }
+                            _consumers.Add(messageConsumer);
+                            _logger.LogInformation("Consumer {EventType} iniciado para fila {QueueName}", eventType.Name, queueConfig.Name);
                         }
-                        
-                        _logger.LogInformation("Consumer {EventType} iniciado para fila {QueueName}", eventType.Name, queueConfig.Name);
                     }
                 }
                 else
@@ -111,6 +117,8 @@ public class RabbitMqBackgroundService : BackgroundService
                 _logger.LogError(ex, "Erro ao iniciar consumer para fila {QueueName}", queueConfig.Name);
             }
         }
+        
+        _logger.LogInformation("Total de consumers iniciados: {ConsumerCount}", _consumers.Count);
     }
 
     private async Task StopConsumersAsync()

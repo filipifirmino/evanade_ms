@@ -29,6 +29,17 @@ public class ProductController(IProductGateway productGateway, ILogger<ProductCo
             return NotFound();
         return Ok(product);
     }
+    
+    [HttpGet]
+    [Route("quantity-available-product-by-id")]
+    public async Task<IActionResult> GetQuantityAvailableProductById([FromHeader] Guid id)
+    {
+        logger.LogInformation("Get quantity product with id: {id}", id);
+        var product = await productGateway.GetProductById(id);
+        if (product == null)
+            return NotFound();
+        return Ok(product.GetStockAvailable());
+    }
 
     [HttpPost]
     [Route("create-product")]
@@ -53,4 +64,5 @@ public class ProductController(IProductGateway productGateway, ILogger<ProductCo
         await productGateway.DeleteProduct(product);
         return Ok();
     }
+
 }

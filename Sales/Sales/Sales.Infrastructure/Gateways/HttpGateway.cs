@@ -13,23 +13,16 @@ public class HttpGateway(IConfiguration configuration, HttpClient httpClient, IL
         {
             var baseUrl = configuration.GetSection("ProductUrl").Value;
             
-            // Limpar headers anteriores e adicionar o ID do produto
             httpClient.DefaultRequestHeaders.Clear();
             httpClient.DefaultRequestHeaders.Add("id", productId.ToString());
             
-            var response = await httpClient.GetAsync($"{baseUrl}product-by-id");
+            var response = await httpClient.GetAsync($"{baseUrl}quantity-available-product-by-id");
             response.EnsureSuccessStatusCode();
             
             var responseBody = await response.Content.ReadAsStringAsync();
-            using JsonDocument doc = JsonDocument.Parse(responseBody);
             
-            if (doc.RootElement.TryGetProperty("stockQuantity", out JsonElement stockQuantityElement))
-            {
-                return stockQuantityElement.GetInt32();
-            }
+            return int.Parse(responseBody);
             
-            logger.LogError("Response does not contain 'stockQuantity' property for product {ProductId}", productId);
-            throw new InvalidOperationException($"Product {productId} stock information not found");
         }
         catch (HttpRequestException ex)
         {
