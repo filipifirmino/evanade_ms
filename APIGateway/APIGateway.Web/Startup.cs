@@ -28,19 +28,16 @@ public class Startup
             app.UseSwaggerUI(c =>
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "API Gateway v1");
-                c.RoutePrefix = string.Empty; // Para acessar o Swagger na raiz
+                c.RoutePrefix = string.Empty; 
             });
         }
         
         app.UseMiddleware<ExceptionHandlingMiddleware>();
         app.UseMiddleware<RequestLoggingMiddleware>();
-        app.UseMiddleware<RateLimitingMiddleware>();
-            
         app.UseHttpsRedirection();
         app.UseRouting();
-            
-        app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
-            
+        app.UseCors("CorsPolicy");
+        app.UseMiddleware<RateLimitingMiddleware>();
         app.UseAuthentication();
         app.UseAuthorization();
 

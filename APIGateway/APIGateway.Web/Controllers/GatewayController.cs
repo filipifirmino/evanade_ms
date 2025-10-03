@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using System.Text.Json;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using APIGateway.ApplicationCore.Abstractions;
 using APIGateway.ApplicationCore.DTOs;
@@ -138,11 +139,11 @@ public class GatewayController: ControllerBase
                 try
                 {
                     return StatusCode(response.StatusCode, 
-                        System.Text.Json.JsonSerializer.Deserialize<object>(response.Content));
+                        JsonSerializer.Deserialize<object>(response.Content));
                 }
-                catch (System.Text.Json.JsonException)
+                catch (JsonException)
                 {
-                    // Fallback para texto simples
+                    return StatusCode(response.StatusCode, new { exeption = response.Content });
                 }
             }
             

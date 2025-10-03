@@ -6,7 +6,7 @@ public class OrderRequest
     public Guid CustomerId { get; set; }
     public List<OrderItem> Items { get; set; } = new();
     public decimal TotalAmount { get; set; }
-    public string Status { get; set; } = "Created";
+    public Status Status { get; set; } = Status.Created;
 }
 
 public class OrderItem
@@ -14,4 +14,12 @@ public class OrderItem
     public Guid ProductId { get; set; }
     public int Quantity { get; set; }
     public decimal UnitPrice { get; set; }
+}
+
+public enum Status
+{
+    Created,
+    Confirmed,
+    Cancelled,
+    Failed
 }

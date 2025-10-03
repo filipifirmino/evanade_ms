@@ -22,8 +22,7 @@ namespace APIGateway.Web.Middleware
             try
             {
                 var requestBody = string.Empty;
-
-                // Registrar detalhes da requisição
+                
                 if (context.Request.ContentLength > 0)
                 {
                     context.Request.EnableBuffering();
@@ -38,14 +37,13 @@ namespace APIGateway.Web.Middleware
                     context.Request.Path,
                     requestBody);
 
-                // Usar um MemoryStream para capturar a resposta
+
                 using var responseBody = new MemoryStream();
                 context.Response.Body = responseBody;
 
-                // Chamar o próximo middleware
+
                 await _next(context);
 
-                // Registrar detalhes da resposta
                 stopwatch.Stop();
                 responseBody.Seek(0, SeekOrigin.Begin);
                 var responseContent = await new StreamReader(responseBody).ReadToEndAsync();
@@ -57,7 +55,6 @@ namespace APIGateway.Web.Middleware
                     stopwatch.ElapsedMilliseconds,
                     responseContent);
 
-                // Copiar o conteúdo capturado para o stream original
                 await responseBody.CopyToAsync(originalBodyStream);
             }
             catch (Exception ex)
@@ -67,7 +64,6 @@ namespace APIGateway.Web.Middleware
             }
             finally
             {
-                // Restaurar o stream original se houver exceção
                 context.Response.Body = originalBodyStream;
             }
         }

@@ -21,7 +21,6 @@ public static class ServiceCollectionExtensions
                     .AllowCredentials();
             });
         });
-        // JWT Authentication
         services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>
             {
@@ -39,9 +38,12 @@ public static class ServiceCollectionExtensions
                 };
             });
 
-        services.AddControllers();
+        services.AddControllers()
+            .AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
+            });
         services.AddAuthorization();
-        services.AddCors();
         services.AddHealthChecks()
             .AddCheck("self", () => Microsoft.Extensions.Diagnostics.HealthChecks.HealthCheckResult.Healthy("API Gateway está funcionando"))
             .AddCheck("jwt", () => 

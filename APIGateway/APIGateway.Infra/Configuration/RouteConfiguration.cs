@@ -59,11 +59,9 @@ namespace APIGateway.Infra.Configuration
 
         private bool IsRouteMatch(string template, string path)
         {
-            // Normalizar o path removendo barras no início
             path = path.TrimStart('/');
             template = template.TrimStart('/');
-
-            // Fazer comparação direta simples
+            
             return string.Equals(template, path, StringComparison.OrdinalIgnoreCase);
         }
 

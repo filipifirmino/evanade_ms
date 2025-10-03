@@ -9,6 +9,6 @@ public abstract class OrderDto
     public Guid CustomerId { get; set; }
     public List<OrderItem> Items { get; set; } = new();
     public decimal TotalAmount { get; set; }
-    public Status Status { get; set; }
+    public Status Status { get; set; } = Status.Created;
 }
 

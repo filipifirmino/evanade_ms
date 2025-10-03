@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Sales.Application.AbstractionsGateways;
 using Sales.Application.UseCases.Abstractions;
@@ -9,6 +10,7 @@ namespace Sales.Web.Controllers;
 
 [ApiController]
 [Route("api/v1/[controller]")]
+[Authorize]
 public class OrderController : ControllerBase
 {
     private readonly IOrderGateway _orderGateway;
@@ -23,6 +25,7 @@ public class OrderController : ControllerBase
  
     [HttpGet]
     [Route("all-order")]
+    [Authorize(Roles = "User,Admin")]
     public async Task<IActionResult> GetAll()
     {
         var result = await _orderGateway.GetAllOrders();
@@ -31,6 +34,7 @@ public class OrderController : ControllerBase
     
     [HttpGet]
     [Route("get-by-id")]
+    [Authorize(Roles = "User,Admin")]
     public async Task<IActionResult> GetById([FromHeader] Guid id)
     {
         var result = await _orderGateway.GetOrderById(id);
@@ -39,9 +43,13 @@ public class OrderController : ControllerBase
     
     [HttpPost]
     [Route("create-order")]
+    [Authorize(Roles = "User,Admin")]
     public async Task<IActionResult> Create([FromBody] OrderRequest request)
     {
-        var result = await _orderProcess.HandleOrder(request.ToOrder());
+        // Extrair token de autorização do header
+        var authorizationToken = Request.Headers["Authorization"].FirstOrDefault();
+        
+        var result = await _orderProcess.HandleOrder(request.ToOrder(), authorizationToken);
 
         if (!result.IsSuccess)
         {
@@ -53,6 +61,7 @@ public class OrderController : ControllerBase
     
     [HttpPut]
     [Route("update-order")]
+    [Authorize(Roles = "User,Admin")]
     public async Task<IActionResult> Update([FromHeader] Guid id, [FromBody] OrderRequest request)
     {
         await _orderGateway.UpdateOrder(request.ToOrder());
@@ -61,6 +70,7 @@ public class OrderController : ControllerBase
 
     [HttpDelete]
     [Route("remove-order")]
+    [Authorize(Roles = "User,Admin")]
     public async Task<IActionResult> Delete([FromBody] OrderRequest request)
     {
         await _orderGateway.DeleteOrder(request.ToOrder());
