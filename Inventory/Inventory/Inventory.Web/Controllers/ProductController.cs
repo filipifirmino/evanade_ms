@@ -2,6 +2,7 @@
 using Inventory.Application.Entities;
 using Inventory.Web.Mappers;
 using Inventory.Web.RequestsDto;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Inventory.Web.Controllers;
@@ -9,10 +10,12 @@ namespace Inventory.Web.Controllers;
 
 [ApiController]
 [Route("api/v1/[controller]")]
+[Authorize]
 public class ProductController(IProductGateway productGateway, ILogger<ProductController> logger) : ControllerBase
 {
     [HttpGet]
     [Route("all-products")]
+    [Authorize(Roles = "User,Admin")]
     public async Task<IActionResult> GetAllProducts()
     {
         var products = await productGateway.GetAllProducts();
@@ -21,6 +24,7 @@ public class ProductController(IProductGateway productGateway, ILogger<ProductCo
 
     [HttpGet]
     [Route("product-by-id")]
+    [Authorize(Roles = "User,Admin")]
     public async Task<IActionResult> GetProductById([FromHeader] Guid id)
     {
         logger.LogInformation("Get product with id: {id}", id);
@@ -32,6 +36,7 @@ public class ProductController(IProductGateway productGateway, ILogger<ProductCo
     
     [HttpGet]
     [Route("quantity-available-product-by-id")]
+    [Authorize(Roles = "User,Admin")]
     public async Task<IActionResult> GetQuantityAvailableProductById([FromHeader] Guid id)
     {
         logger.LogInformation("Get quantity product with id: {id}", id);
@@ -43,6 +48,7 @@ public class ProductController(IProductGateway productGateway, ILogger<ProductCo
 
     [HttpPost]
     [Route("create-product")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> CreateProduct([FromBody] ProductRequest product)
     {
         var createdProduct = await productGateway.AddProduct(product.ToProduct());
@@ -51,6 +57,7 @@ public class ProductController(IProductGateway productGateway, ILogger<ProductCo
     
     [HttpPut]
     [Route("update-product")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> UpdateProduct([FromBody] ProductRequest product)
     {
         await productGateway.UpdateProduct(product.ToProduct());
@@ -59,6 +66,7 @@ public class ProductController(IProductGateway productGateway, ILogger<ProductCo
 
     [HttpDelete]
     [Route("remove-product")]
+    [Authorize(Roles = "Admin")]
     public async Task<IActionResult> DeleteProduct([FromBody] Product product)
     {
         await productGateway.DeleteProduct(product);

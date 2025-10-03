@@ -7,7 +7,7 @@ namespace Sales.Infrastructure.Gateways;
 
 public class HttpGateway(IConfiguration configuration, HttpClient httpClient, ILogger<HttpGateway> logger) : IHttpGateway
 {
-    public async Task<int> GetProductStockQuantity(Guid productId)
+    public async Task<int> GetProductStockQuantity(Guid productId, string authorizationToken = null)
     {
         try
         {
@@ -15,6 +15,12 @@ public class HttpGateway(IConfiguration configuration, HttpClient httpClient, IL
             
             httpClient.DefaultRequestHeaders.Clear();
             httpClient.DefaultRequestHeaders.Add("id", productId.ToString());
+            
+            // Adicionar token de autorização se fornecido
+            if (!string.IsNullOrEmpty(authorizationToken))
+            {
+                httpClient.DefaultRequestHeaders.Add("Authorization", authorizationToken);
+            }
             
             var response = await httpClient.GetAsync($"{baseUrl}quantity-available-product-by-id");
             response.EnsureSuccessStatusCode();

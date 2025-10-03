@@ -37,9 +37,6 @@ public static class ConfigureInfra
         services.AddScoped<IGenericEventProducer, GenericEventProducer>();
         services.AddScoped(typeof(IMessageConsumer<>), typeof(MessageConsumer<>));
         
-        // UseCase para OrderConfirmed
-        services.AddScoped<IOrderConfirmedProcess, OrderConfirmedProcess>();
-        
         // Handlers específicos
         services.AddScoped<IMessageHandle<OrderConfirmed>, OrderConfirmedSubscriber>();
         

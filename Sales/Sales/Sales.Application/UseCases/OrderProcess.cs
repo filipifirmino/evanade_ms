@@ -27,7 +27,7 @@ public class OrderProcess : IOrderProcess
         _eventProducer = eventProducer;
     }
 
-    public async Task<Result<Order>> HandleOrder(Order order)
+    public async Task<Result<Order>> HandleOrder(Order order, string authorizationToken = null)
     {
         try
         {
@@ -40,7 +40,7 @@ public class OrderProcess : IOrderProcess
 
             foreach (var product in order.Items)
             {
-                var availableQuantity = await _httpGateway.GetProductStockQuantity(product.ProductId);
+                var availableQuantity = await _httpGateway.GetProductStockQuantity(product.ProductId, authorizationToken);
                 if (availableQuantity >= product.Quantity) continue;
                 _logger.LogWarning("Insufficient stock for product {ProductId}. Requested: {Requested}, Available: {Available}", 
                     product.ProductId, product.Quantity, availableQuantity);

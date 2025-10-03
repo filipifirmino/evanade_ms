@@ -6,6 +6,6 @@ namespace Sales.Application.UseCases.Abstractions;
 
 public interface IOrderProcess
 {
-    Task<Result<Order>> HandleOrder(Order order);
+    Task<Result<Order>> HandleOrder(Order order, string authorizationToken = null);
     
 }

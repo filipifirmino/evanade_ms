@@ -2,6 +2,7 @@
 using Microsoft.OpenApi.Models;
 using Sales.Application.Configure;
 using Sales.Infrastructure.Configure;
+using Sales.Web.Extensions;
 using Sales.Web.Middlewares;
 
 namespace Sales.Web;
@@ -17,7 +18,12 @@ public class Startup
     
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddControllers();
+        services.AddControllers()
+            .AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.Converters.Add(new System.Text.Json.Serialization.JsonStringEnumConverter());
+            });
+        services.AddJwtAuthentication(_Configuration);
         services.AddConfigureInfra(_Configuration);
         services.AddApplicationConfiguration();
         services.AddHttpClient();
@@ -40,6 +46,8 @@ public class Startup
         
         app.UseHttpsRedirection();
         app.UseRouting();
+        app.UseAuthentication();
+        app.UseAuthorization();
         app.UseMiddleware<RequestTimingMiddleware>();
         app.UseEndpoints(endpoints =>
         {

@@ -2,5 +2,5 @@
 
 public interface IHttpGateway
 {
-    Task<int> GetProductStockQuantity(Guid productId);
+    Task<int> GetProductStockQuantity(Guid productId, string authorizationToken = null);
 }

@@ -1,6 +1,8 @@
-﻿using Inventory.Application.Configure;
+﻿using System.Text.Json.Serialization;
+using Inventory.Application.Configure;
 using Inventory.InfraStructure.Configure;
 using Inventory.InfraStructure.Rabbit;
+using Inventory.Web.Extensions;
 using Inventory.Web.Middlewares;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
@@ -18,7 +20,12 @@ public class Startup
 
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddControllers();
+        services.AddControllers()
+            .AddJsonOptions(options =>
+            {
+                options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+            });
+        services.AddJwtAuthentication(_Configuration);
         services.Configure<RabbitMqSettings>(_Configuration.GetSection("RabbitMQ"));
         services.AddConfigureInfra();
         services.AddApplicationConfiguration();
@@ -42,6 +49,8 @@ public class Startup
         
         app.UseHttpsRedirection();
         app.UseRouting();
+        app.UseAuthentication();
+        app.UseAuthorization();
         app.UseMiddleware<RequestTimingMiddleware>();
         app.UseEndpoints(endpoints =>
         {
