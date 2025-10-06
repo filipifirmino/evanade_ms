@@ -7,5 +7,5 @@ public class User
     public string Role { get; set; }
     public DateTime CreatedAt { get; set; }
         
-    public bool IsValid() => !string.IsNullOrEmpty(Username);
+    public bool IsValid() => !string.IsNullOrEmpty(Username) && !string.IsNullOrWhiteSpace(Username);
 }

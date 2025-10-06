@@ -26,7 +26,7 @@ public class ProductController(IProductGateway productGateway, ILogger<ProductCo
         catch (Exception ex)
         {
             logger.LogError(ex, "Erro ao buscar todos os produtos");
-            throw; // O middleware global irá capturar e tratar
+            throw; 
         }
     }
 
@@ -46,7 +46,7 @@ public class ProductController(IProductGateway productGateway, ILogger<ProductCo
         catch (Exception ex)
         {
             logger.LogError(ex, "Erro ao buscar produto com id: {id}", id);
-            throw; // O middleware global irá capturar e tratar
+            throw; 
         }
     }
     
@@ -66,7 +66,7 @@ public class ProductController(IProductGateway productGateway, ILogger<ProductCo
         catch (Exception ex)
         {
             logger.LogError(ex, "Erro ao buscar quantidade disponível do produto com id: {id}", id);
-            throw; // O middleware global irá capturar e tratar
+            throw; 
         }
     }
 
@@ -83,7 +83,7 @@ public class ProductController(IProductGateway productGateway, ILogger<ProductCo
         catch (Exception ex)
         {
             logger.LogError(ex, "Erro ao criar produto: {@product}", product);
-            throw; // O middleware global irá capturar e tratar
+            throw; 
         }
     }
     
@@ -100,7 +100,7 @@ public class ProductController(IProductGateway productGateway, ILogger<ProductCo
         catch (Exception ex)
         {
             logger.LogError(ex, "Erro ao atualizar produto: {@product}", product);
-            throw; // O middleware global irá capturar e tratar
+            throw;
         }
     }
 
@@ -117,7 +117,7 @@ public class ProductController(IProductGateway productGateway, ILogger<ProductCo
         catch (Exception ex)
         {
             logger.LogError(ex, "Erro ao excluir produto: {@product}", product);
-            throw; // O middleware global irá capturar e tratar
+            throw;
         }
     }
 

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<RunSettings>
+  <DataCollectionRunSettings>
+    <DataCollectors>
+      <DataCollector friendlyName="XPlat code coverage">
+        <Configuration>
+          <Format>cobertura</Format>
+          <SkipAutoProps>true</SkipAutoProps>
+          <IncludeTestAssembly>false</IncludeTestAssembly>
+          <SingleHit>false</SingleHit>
+          <UseSourceLink>true</UseSourceLink>
+          <IncludeDirectory>../APIGateway.ApplicationCore/**/*</IncludeDirectory>
+          <IncludeDirectory>../APIGateway.Infra/**/*</IncludeDirectory>
+          <IncludeDirectory>../APIGateway.Web/**/*</IncludeDirectory>
+          <Exclude>[*.Tests]*</Exclude>
+          <Exclude>[*.Test]*</Exclude>
+          <Exclude>[xunit.*]*</Exclude>
+          <Exclude>[AutoBogus]*</Exclude>
+          <Exclude>[Moq]*</Exclude>
+          <Exclude>[Microsoft.Extensions.*]*</Exclude>
+          <Exclude>[System.*]*</Exclude>
+          <Exclude>[FluentAssertions]*</Exclude>
+          <Exclude>[Microsoft.AspNetCore.*]*</Exclude>
+          <Exclude>[Microsoft.IdentityModel.*]*</Exclude>
+          <Exclude>[System.IdentityModel.*]*</Exclude>
+          <Exclude>[Microsoft.AspNetCore.Mvc.*]*</Exclude>
+        </Configuration>
+      </DataCollector>
+    </DataCollectors>
+  </DataCollectionRunSettings>
+</RunSettings>

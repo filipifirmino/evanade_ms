@@ -318,6 +318,302 @@ public class ProductGatewayUnitTests
         _mockRepository.Verify(x => x.GetAllAsync(), Times.Once);
     }
 
+    [Fact]
+    public async Task AddProduct_WhenSqlExceptionOccurs_ShouldThrowDataAccessException()
+    {
+        // Arrange
+        var product = AutoFaker.Generate<Product>();
+        var sqlException = new Exception("Database error");
+
+        _mockRepository
+            .Setup(x => x.AddAsync(It.IsAny<ProductEntity>()))
+            .ThrowsAsync(sqlException);
+
+        // Act & Assert
+        var exception = await Assert.ThrowsAsync<Exception>(() => 
+            _productGateway.AddProduct(product));
+
+        Assert.Contains("Database error", exception.Message);
+    }
+
+    [Fact]
+    public async Task UpdateProduct_WhenSqlExceptionOccurs_ShouldThrowDataAccessException()
+    {
+        // Arrange
+        var product = AutoFaker.Generate<Product>();
+        var sqlException = new Exception("Database error");
+
+        _mockRepository
+            .Setup(x => x.UpdateAsync(It.IsAny<ProductEntity>()))
+            .ThrowsAsync(sqlException);
+
+        // Act & Assert
+        var exception = await Assert.ThrowsAsync<Exception>(() => 
+            _productGateway.UpdateProduct(product));
+
+        Assert.Contains("Database error", exception.Message);
+    }
+
+    [Fact]
+    public async Task UpdateQuantityProduct_WhenSqlExceptionOccurs_ShouldThrowDataAccessException()
+    {
+        // Arrange
+        var productId = Guid.NewGuid();
+        var newQuantity = 50;
+        var sqlException = new Exception("Database error");
+
+        _mockRepository
+            .Setup(x => x.UpdateQuantityProduct(newQuantity, productId))
+            .ThrowsAsync(sqlException);
+
+        // Act & Assert
+        var exception = await Assert.ThrowsAsync<Exception>(() => 
+            _productGateway.UpdateQuantityProduct(newQuantity, productId));
+
+        Assert.Contains("Database error", exception.Message);
+    }
+
+    [Fact]
+    public async Task DeleteProduct_WhenSqlExceptionOccurs_ShouldThrowDataAccessException()
+    {
+        // Arrange
+        var product = AutoFaker.Generate<Product>();
+        var sqlException = new Exception("Database error");
+
+        _mockRepository
+            .Setup(x => x.DeleteAsync(It.IsAny<ProductEntity>()))
+            .ThrowsAsync(sqlException);
+
+        // Act & Assert
+        var exception = await Assert.ThrowsAsync<Exception>(() => 
+            _productGateway.DeleteProduct(product));
+
+        Assert.Contains("Database error", exception.Message);
+    }
+
+    [Fact]
+    public async Task GetProductById_WhenSqlExceptionOccurs_ShouldThrowDataAccessException()
+    {
+        // Arrange
+        var productId = Guid.NewGuid();
+        var sqlException = new Exception("Database error");
+
+        _mockRepository
+            .Setup(x => x.GetByIdAsync(productId))
+            .ThrowsAsync(sqlException);
+
+        // Act & Assert
+        var exception = await Assert.ThrowsAsync<Exception>(() => 
+            _productGateway.GetProductById(productId));
+
+        Assert.Contains("Database error", exception.Message);
+    }
+
+    [Fact]
+    public async Task GetAllProducts_WhenSqlExceptionOccurs_ShouldThrowDataAccessException()
+    {
+        // Arrange
+        var sqlException = new Exception("Database error");
+
+        _mockRepository
+            .Setup(x => x.GetAllAsync())
+            .ThrowsAsync(sqlException);
+
+        // Act & Assert
+        var exception = await Assert.ThrowsAsync<Exception>(() => 
+            _productGateway.GetAllProducts());
+
+        Assert.Contains("Database error", exception.Message);
+    }
+
+    [Fact]
+    public async Task AddProduct_WithNullProduct_ShouldHandleGracefully()
+    {
+        // Arrange
+        Product? nullProduct = null;
+        var productEntity = AutoFaker.Generate<ProductEntity>();
+
+        _mockRepository
+            .Setup(x => x.AddAsync(It.IsAny<ProductEntity>()))
+            .ReturnsAsync(productEntity);
+
+        // Act & Assert
+        await Assert.ThrowsAsync<NullReferenceException>(() => 
+            _productGateway.AddProduct(nullProduct!));
+    }
+
+    [Fact]
+    public async Task UpdateProduct_WithNullProduct_ShouldHandleGracefully()
+    {
+        // Arrange
+        Product? nullProduct = null;
+
+        _mockRepository
+            .Setup(x => x.UpdateAsync(It.IsAny<ProductEntity>()))
+            .Returns(Task.CompletedTask);
+
+        // Act & Assert
+        await Assert.ThrowsAsync<NullReferenceException>(() => 
+            _productGateway.UpdateProduct(nullProduct!));
+    }
+
+    [Fact]
+    public async Task DeleteProduct_WithNullProduct_ShouldHandleGracefully()
+    {
+        // Arrange
+        Product? nullProduct = null;
+
+        _mockRepository
+            .Setup(x => x.DeleteAsync(It.IsAny<ProductEntity>()))
+            .Returns(Task.CompletedTask);
+
+        // Act & Assert
+        await Assert.ThrowsAsync<NullReferenceException>(() => 
+            _productGateway.DeleteProduct(nullProduct!));
+    }
+
+    [Fact]
+    public async Task GetProductById_WithEmptyGuid_ShouldHandleCorrectly()
+    {
+        // Arrange
+        var emptyGuid = Guid.Empty;
+        var productEntity = AutoFaker.Generate<ProductEntity>();
+
+        _mockRepository
+            .Setup(x => x.GetByIdAsync(emptyGuid))
+            .ReturnsAsync(productEntity);
+
+        // Act
+        var result = await _productGateway.GetProductById(emptyGuid);
+
+        // Assert
+        Assert.NotNull(result);
+        _mockRepository.Verify(x => x.GetByIdAsync(emptyGuid), Times.Once);
+    }
+
+    [Theory]
+    [InlineData(-1)]
+    [InlineData(-100)]
+    [InlineData(int.MinValue)]
+    public async Task UpdateQuantityProduct_WithNegativeQuantities_ShouldUpdateCorrectly(int quantity)
+    {
+        // Arrange
+        var productId = Guid.NewGuid();
+
+        _mockRepository
+            .Setup(x => x.UpdateQuantityProduct(quantity, productId))
+            .Returns(Task.CompletedTask);
+
+        // Act
+        await _productGateway.UpdateQuantityProduct(quantity, productId);
+
+        // Assert
+        _mockRepository.Verify(x => x.UpdateQuantityProduct(quantity, productId), Times.Once);
+    }
+
+    [Fact]
+    public async Task GetAllProducts_WithNullRepositoryResult_ShouldReturnEmptyList()
+    {
+        // Arrange
+        IEnumerable<ProductEntity>? nullResult = null;
+
+        _mockRepository
+            .Setup(x => x.GetAllAsync())
+            .ReturnsAsync(nullResult!);
+
+        // Act & Assert
+        await Assert.ThrowsAsync<ArgumentNullException>(() => 
+            _productGateway.GetAllProducts());
+    }
+
+    [Fact]
+    public async Task GetProductById_WithNullRepositoryResult_ShouldReturnNull()
+    {
+        // Arrange
+        var productId = Guid.NewGuid();
+
+        _mockRepository
+            .Setup(x => x.GetByIdAsync(productId))
+            .ReturnsAsync((ProductEntity?)null);
+
+        // Act
+        var result = await _productGateway.GetProductById(productId);
+
+        // Assert
+        Assert.Null(result);
+        _mockRepository.Verify(x => x.GetByIdAsync(productId), Times.Once);
+    }
+
+    [Fact]
+    public async Task AddProduct_ShouldLogSuccessOperation()
+    {
+        // Arrange
+        var product = AutoFaker.Generate<Product>();
+        var productEntity = AutoFaker.Generate<ProductEntity>();
+
+        _mockRepository
+            .Setup(x => x.AddAsync(It.IsAny<ProductEntity>()))
+            .ReturnsAsync(productEntity);
+
+        // Act
+        await _productGateway.AddProduct(product);
+
+        // Assert
+        _mockRepository.Verify(x => x.AddAsync(It.IsAny<ProductEntity>()), Times.Once);
+    }
+
+    [Fact]
+    public async Task UpdateProduct_ShouldLogInformation()
+    {
+        // Arrange
+        var product = AutoFaker.Generate<Product>();
+
+        _mockRepository
+            .Setup(x => x.UpdateAsync(It.IsAny<ProductEntity>()))
+            .Returns(Task.CompletedTask);
+
+        // Act
+        await _productGateway.UpdateProduct(product);
+
+        // Assert
+        VerifyLogInformation("Update product");
+    }
+
+    [Fact]
+    public async Task UpdateQuantityProduct_ShouldLogInformation()
+    {
+        // Arrange
+        var productId = Guid.NewGuid();
+        var newQuantity = 75;
+
+        _mockRepository
+            .Setup(x => x.UpdateQuantityProduct(newQuantity, productId))
+            .Returns(Task.CompletedTask);
+
+        // Act
+        await _productGateway.UpdateQuantityProduct(newQuantity, productId);
+
+        // Assert
+        VerifyLogInformation($"Update quantity product: {productId} to new quantity: {newQuantity}");
+    }
+
+    [Fact]
+    public async Task DeleteProduct_ShouldLogInformation()
+    {
+        // Arrange
+        var product = AutoFaker.Generate<Product>();
+
+        _mockRepository
+            .Setup(x => x.DeleteAsync(It.IsAny<ProductEntity>()))
+            .Returns(Task.CompletedTask);
+
+        // Act
+        await _productGateway.DeleteProduct(product);
+
+        // Assert
+        VerifyLogInformation("Delelete produtc:");
+    }
+
     private void VerifyLogInformation(string message)
     {
         _mockLogger.Verify(

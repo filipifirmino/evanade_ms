@@ -214,32 +214,28 @@ var assemblies = [
     "name": "Inventory.Application",
     "classes": [
       { "name": "Inventory.Application.Configure.ConfigureApplication", "rp": "Inventory.Application_ConfigureApplication.html", "cl": 0, "ucl": 6, "cal": 6, "tl": 18, "cb": 0, "tb": 0, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
-      { "name": "Inventory.Application.Entities.Product", "rp": "Inventory.Application_Product.html", "cl": 36, "ucl": 3, "cal": 39, "tl": 56, "cb": 10, "tb": 10, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
-      { "name": "Inventory.Application.Events.OrderCreatedEvent", "rp": "Inventory.Application_OrderCreatedEvent.html", "cl": 5, "ucl": 0, "cal": 5, "tl": 18, "cb": 0, "tb": 0, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
-      { "name": "Inventory.Application.Events.OrderItemEvent", "rp": "Inventory.Application_OrderItemEvent.html", "cl": 4, "ucl": 0, "cal": 4, "tl": 18, "cb": 0, "tb": 0, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
-      { "name": "Inventory.Application.Events.StockUpdateConfirmedEvent", "rp": "Inventory.Application_StockUpdateConfirmedEvent.html", "cl": 7, "ucl": 0, "cal": 7, "tl": 12, "cb": 0, "tb": 0, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
-      { "name": "Inventory.Application.UseCases.ProcessOrderCreated", "rp": "Inventory.Application_ProcessOrderCreated.html", "cl": 40, "ucl": 0, "cal": 40, "tl": 60, "cb": 4, "tb": 4, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
+      { "name": "Inventory.Application.Entities.Product", "rp": "Inventory.Application_Product.html", "cl": 29, "ucl": 3, "cal": 32, "tl": 56, "cb": 10, "tb": 10, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
+      { "name": "Inventory.Application.UseCases.ProcessOrderCreated", "rp": "Inventory.Application_ProcessOrderCreated.html", "cl": 36, "ucl": 0, "cal": 36, "tl": 60, "cb": 4, "tb": 4, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
     ]},
   {
     "name": "Inventory.InfraStructure",
     "classes": [
       { "name": "Inventory.InfraStructure.Configure.ConfigureInfra", "rp": "Inventory.InfraStructure_ConfigureInfra.html", "cl": 0, "ucl": 18, "cal": 18, "tl": 41, "cb": 0, "tb": 0, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
       { "name": "Inventory.InfraStructure.Configure.DataContext", "rp": "Inventory.InfraStructure_DataContext.html", "cl": 25, "ucl": 4, "cal": 29, "tl": 46, "cb": 1, "tb": 2, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
-      { "name": "Inventory.InfraStructure.Entities.ProductEntity", "rp": "Inventory.InfraStructure_ProductEntity.html", "cl": 6, "ucl": 0, "cal": 6, "tl": 11, "cb": 0, "tb": 0, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
-      { "name": "Inventory.InfraStructure.Gateways.ProductGateway", "rp": "Inventory.InfraStructure_ProductGateway.html", "cl": 38, "ucl": 18, "cal": 56, "tl": 101, "cb": 2, "tb": 2, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
+      { "name": "Inventory.InfraStructure.Gateways.ProductGateway", "rp": "Inventory.InfraStructure_ProductGateway.html", "cl": 37, "ucl": 18, "cal": 55, "tl": 100, "cb": 2, "tb": 2, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
       { "name": "Inventory.InfraStructure.Mapper.ProductMapper", "rp": "Inventory.InfraStructure_ProductMapper.html", "cl": 15, "ucl": 0, "cal": 15, "tl": 26, "cb": 0, "tb": 0, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
-      { "name": "Inventory.InfraStructure.Migrations.addReservationProperty", "rp": "Inventory.InfraStructure_addReservationProperty.html", "cl": 0, "ucl": 66, "cal": 66, "tl": 109, "cb": 0, "tb": 0, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
-      { "name": "Inventory.InfraStructure.Migrations.DataContextModelSnapshot", "rp": "Inventory.InfraStructure_DataContextModelSnapshot.html", "cl": 0, "ucl": 37, "cal": 37, "tl": 59, "cb": 0, "tb": 0, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
-      { "name": "Inventory.InfraStructure.Migrations.InitialCreate", "rp": "Inventory.InfraStructure_InitialCreate.html", "cl": 0, "ucl": 63, "cal": 63, "tl": 107, "cb": 0, "tb": 0, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
+      { "name": "Inventory.InfraStructure.Migrations.addReservationProperty", "rp": "Inventory.InfraStructure_addReservationProperty.html", "cl": 0, "ucl": 66, "cal": 66, "tl": 107, "cb": 0, "tb": 0, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
+      { "name": "Inventory.InfraStructure.Migrations.DataContextModelSnapshot", "rp": "Inventory.InfraStructure_DataContextModelSnapshot.html", "cl": 0, "ucl": 37, "cal": 37, "tl": 58, "cb": 0, "tb": 0, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
+      { "name": "Inventory.InfraStructure.Migrations.InitialCreate", "rp": "Inventory.InfraStructure_InitialCreate.html", "cl": 0, "ucl": 63, "cal": 63, "tl": 105, "cb": 0, "tb": 0, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
       { "name": "Inventory.InfraStructure.Rabbit.BackgroundServices.RabbitMqBackgroundService", "rp": "Inventory.InfraStructure_RabbitMqBackgroundService.html", "cl": 0, "ucl": 25, "cal": 25, "tl": 44, "cb": 0, "tb": 2, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
-      { "name": "Inventory.InfraStructure.Rabbit.Bases.BasePublisher<T>", "rp": "Inventory.InfraStructure_BasePublisher_1.html", "cl": 0, "ucl": 6, "cal": 6, "tl": 17, "cb": 0, "tb": 0, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
-      { "name": "Inventory.InfraStructure.Rabbit.Bases.BaseSubscriber<T>", "rp": "Inventory.InfraStructure_BaseSubscriber_1.html", "cl": 0, "ucl": 6, "cal": 6, "tl": 19, "cb": 0, "tb": 0, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
-      { "name": "Inventory.InfraStructure.Rabbit.Publisher.OrderConfirmedPublisher", "rp": "Inventory.InfraStructure_OrderConfirmedPublisher.html", "cl": 0, "ucl": 2, "cal": 2, "tl": 11, "cb": 0, "tb": 0, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
-      { "name": "Inventory.InfraStructure.Rabbit.RabbitMqService", "rp": "Inventory.InfraStructure_RabbitMqService.html", "cl": 0, "ucl": 114, "cal": 114, "tl": 170, "cb": 0, "tb": 22, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
-      { "name": "Inventory.InfraStructure.Rabbit.RabbitMqSettings", "rp": "Inventory.InfraStructure_RabbitMqSettings.html", "cl": 0, "ucl": 7, "cal": 7, "tl": 14, "cb": 0, "tb": 0, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
-      { "name": "Inventory.InfraStructure.Rabbit.Subscriber.OrderSubscriber", "rp": "Inventory.InfraStructure_OrderSubscriber.html", "cl": 0, "ucl": 17, "cal": 17, "tl": 38, "cb": 0, "tb": 0, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
-      { "name": "Inventory.InfraStructure.Repositories.ProductRepository", "rp": "Inventory.InfraStructure_ProductRepository.html", "cl": 29, "ucl": 0, "cal": 29, "tl": 53, "cb": 10, "tb": 10, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
-      { "name": "Inventory.InfraStructure.Repositories.RepositoryBase<T>", "rp": "Inventory.InfraStructure_RepositoryBase_1.html", "cl": 1, "ucl": 15, "cal": 16, "tl": 34, "cb": 0, "tb": 0, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
+      { "name": "Inventory.InfraStructure.Rabbit.Bases.BasePublisher<T>", "rp": "Inventory.InfraStructure_BasePublisher_1.html", "cl": 6, "ucl": 0, "cal": 6, "tl": 17, "cb": 0, "tb": 0, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
+      { "name": "Inventory.InfraStructure.Rabbit.Bases.BaseSubscriber<T>", "rp": "Inventory.InfraStructure_BaseSubscriber_1.html", "cl": 6, "ucl": 0, "cal": 6, "tl": 17, "cb": 0, "tb": 0, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
+      { "name": "Inventory.InfraStructure.Rabbit.Publisher.OrderConfirmedPublisher", "rp": "Inventory.InfraStructure_OrderConfirmedPublisher.html", "cl": 2, "ucl": 0, "cal": 2, "tl": 11, "cb": 0, "tb": 0, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
+      { "name": "Inventory.InfraStructure.Rabbit.RabbitMqService", "rp": "Inventory.InfraStructure_RabbitMqService.html", "cl": 24, "ucl": 89, "cal": 113, "tl": 165, "cb": 6, "tb": 22, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
+      { "name": "Inventory.InfraStructure.Rabbit.RabbitMqSettings", "rp": "Inventory.InfraStructure_RabbitMqSettings.html", "cl": 1, "ucl": 0, "cal": 1, "tl": 14, "cb": 0, "tb": 0, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
+      { "name": "Inventory.InfraStructure.Rabbit.Subscriber.OrderSubscriber", "rp": "Inventory.InfraStructure_OrderSubscriber.html", "cl": 13, "ucl": 4, "cal": 17, "tl": 38, "cb": 0, "tb": 0, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
+      { "name": "Inventory.InfraStructure.Repositories.ProductRepository", "rp": "Inventory.InfraStructure_ProductRepository.html", "cl": 29, "ucl": 0, "cal": 29, "tl": 52, "cb": 8, "tb": 10, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
+      { "name": "Inventory.InfraStructure.Repositories.RepositoryBase<T>", "rp": "Inventory.InfraStructure_RepositoryBase_1.html", "cl": 15, "ucl": 0, "cal": 15, "tl": 34, "cb": 0, "tb": 0, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
       { "name": "Inventory.InfraStructure.Tools.DataAccessException", "rp": "Inventory.InfraStructure_DataAccessException.html", "cl": 3, "ucl": 3, "cal": 6, "tl": 16, "cb": 0, "tb": 0, "cm": 0, "fcm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "mfch": [], "hc": [], "metrics": { } },
     ]},
 ];
@@ -254,12 +250,6 @@ var riskHotspotMetrics = [
 ];
 
 var riskHotspots = [
-  {
-    "assembly": "Inventory.InfraStructure", "class": "Inventory.InfraStructure.Rabbit.RabbitMqService", "reportPath": "Inventory.InfraStructure_RabbitMqService.html", "methodName": "Dispose(System.Boolean)", "methodShortName": "Dispose(...)", "fileIndex": 0, "line": 160,
-    "metrics": [
-      { "value": 110, "exceeded": true },
-      { "value": 10, "exceeded": false },
-    ]},
   {
     "assembly": "Inventory.InfraStructure", "class": "Inventory.InfraStructure.Rabbit.RabbitMqService", "reportPath": "Inventory.InfraStructure_RabbitMqService.html", "methodName": "EnsureConnection()", "methodShortName": "EnsureConnection()", "fileIndex": 0, "line": 34,
     "metrics": [
