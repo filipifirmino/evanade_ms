@@ -26,7 +26,7 @@ public class ProductGateway : IProductGateway
         }
         catch (SqlException ex)
         {
-            throw new DataAccessException($"Error inserting record into database ", ex);
+            throw new DataAccessException($"Erro ao inserir registro no banco de dados", ex);
         }
     }
 
@@ -40,7 +40,7 @@ public class ProductGateway : IProductGateway
         }
         catch (SqlException ex)
         {
-            throw new DataAccessException($"Error updating record into database ", ex);
+            throw new DataAccessException($"Erro ao atualizar registro no banco de dados", ex);
         }
     }
 
@@ -54,7 +54,7 @@ public class ProductGateway : IProductGateway
         }
         catch (SqlException ex)
         {
-            throw new DataAccessException($"Error updating record into database ", ex);
+            throw new DataAccessException($"Erro ao atualizar quantidade do produto no banco de dados", ex);
         }
     }
 
@@ -68,7 +68,7 @@ public class ProductGateway : IProductGateway
         }
         catch (SqlException ex)
         {
-            throw new DataAccessException($"Error Deleting record into database ", ex);
+            throw new DataAccessException($"Erro ao excluir registro no banco de dados", ex);
         }
     }
 
@@ -81,7 +81,7 @@ public class ProductGateway : IProductGateway
         }
         catch (SqlException ex)
         {
-            throw new DataAccessException($"Error Deleting record into database ", ex);
+            throw new DataAccessException($"Erro ao buscar produto no banco de dados", ex);
         }
     }
 
@@ -94,7 +94,7 @@ public class ProductGateway : IProductGateway
         }
         catch (SqlException ex)
         {
-            throw new DataAccessException($"Error geting all record into database ", ex);
+            throw new DataAccessException($"Erro ao buscar todos os produtos no banco de dados", ex);
         }
     }
     

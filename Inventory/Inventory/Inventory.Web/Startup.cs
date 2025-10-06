@@ -46,12 +46,18 @@ public class Startup
             app.UseSwagger();
             app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Inventory API v1"));
         }
+        else
+        {
+            app.UseExceptionHandler("/Error");
+            app.UseHsts();
+        }
         
         app.UseHttpsRedirection();
         app.UseRouting();
         app.UseAuthentication();
         app.UseAuthorization();
         app.UseMiddleware<RequestTimingMiddleware>();
+        app.UseMiddleware<GlobalExceptionMiddleware>();
         app.UseEndpoints(endpoints =>
         {
             endpoints.MapControllers();

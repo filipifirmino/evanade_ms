@@ -18,8 +18,16 @@ public class ProductController(IProductGateway productGateway, ILogger<ProductCo
     [Authorize(Roles = "User,Admin")]
     public async Task<IActionResult> GetAllProducts()
     {
-        var products = await productGateway.GetAllProducts();
-        return Ok(products.Select(x => x.ToProductResponse()));
+        try
+        {
+            var products = await productGateway.GetAllProducts();
+            return Ok(products.Select(x => x.ToProductResponse()));
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Erro ao buscar todos os produtos");
+            throw; 
+        }
     }
 
     [HttpGet]
@@ -27,11 +35,19 @@ public class ProductController(IProductGateway productGateway, ILogger<ProductCo
     [Authorize(Roles = "User,Admin")]
     public async Task<IActionResult> GetProductById([FromHeader] Guid id)
     {
-        logger.LogInformation("Get product with id: {id}", id);
-        var product = await productGateway.GetProductById(id);
-        if (product == null)
-            return NotFound();
-        return Ok(product);
+        try
+        {
+            logger.LogInformation("Get product with id: {id}", id);
+            var product = await productGateway.GetProductById(id);
+            if (product == null)
+                return NotFound();
+            return Ok(product);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Erro ao buscar produto com id: {id}", id);
+            throw; 
+        }
     }
     
     [HttpGet]
@@ -39,11 +55,19 @@ public class ProductController(IProductGateway productGateway, ILogger<ProductCo
     [Authorize(Roles = "User,Admin")]
     public async Task<IActionResult> GetQuantityAvailableProductById([FromHeader] Guid id)
     {
-        logger.LogInformation("Get quantity product with id: {id}", id);
-        var product = await productGateway.GetProductById(id);
-        if (product == null)
-            return NotFound();
-        return Ok(product.GetStockAvailable());
+        try
+        {
+            logger.LogInformation("Get quantity product with id: {id}", id);
+            var product = await productGateway.GetProductById(id);
+            if (product == null)
+                return NotFound();
+            return Ok(product.GetStockAvailable());
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Erro ao buscar quantidade disponível do produto com id: {id}", id);
+            throw; 
+        }
     }
 
     [HttpPost]
@@ -51,8 +75,16 @@ public class ProductController(IProductGateway productGateway, ILogger<ProductCo
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> CreateProduct([FromBody] ProductRequest product)
     {
-        var createdProduct = await productGateway.AddProduct(product.ToProduct());
-        return Ok(createdProduct.ToProductResponse());
+        try
+        {
+            var createdProduct = await productGateway.AddProduct(product.ToProduct());
+            return Ok(createdProduct.ToProductResponse());
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Erro ao criar produto: {@product}", product);
+            throw; 
+        }
     }
     
     [HttpPut]
@@ -60,8 +92,16 @@ public class ProductController(IProductGateway productGateway, ILogger<ProductCo
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> UpdateProduct([FromBody] ProductRequest product)
     {
-        await productGateway.UpdateProduct(product.ToProduct());
-        return Ok();
+        try
+        {
+            await productGateway.UpdateProduct(product.ToProduct());
+            return Ok();
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Erro ao atualizar produto: {@product}", product);
+            throw;
+        }
     }
 
     [HttpDelete]
@@ -69,8 +109,16 @@ public class ProductController(IProductGateway productGateway, ILogger<ProductCo
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> DeleteProduct([FromBody] Product product)
     {
-        await productGateway.DeleteProduct(product);
-        return Ok();
+        try
+        {
+            await productGateway.DeleteProduct(product);
+            return Ok();
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Erro ao excluir produto: {@product}", product);
+            throw;
+        }
     }
 
 }

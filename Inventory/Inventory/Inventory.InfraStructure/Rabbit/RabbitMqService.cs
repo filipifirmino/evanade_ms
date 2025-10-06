@@ -76,17 +76,13 @@ public class RabbitMqService : IRabbitMqService, IDisposable
         
         if (_channel == null) return;
         
-        // Configuração para compatibilidade com Sales
         const string exchangeName = "inventory-exchange";
         const string routingKey = "inventory.stock.updated";
         
-        // Declarar exchange
         _channel.ExchangeDeclare(exchangeName, ExchangeType.Direct, true);
         
-        // Declarar fila
         _channel.QueueDeclare(queueName, true, false, false, null);
         
-        // Vincular fila ao exchange
         _channel.QueueBind(queueName, exchangeName, routingKey);
         
         var body = Encoding.UTF8.GetBytes(messageContent);
@@ -94,7 +90,6 @@ public class RabbitMqService : IRabbitMqService, IDisposable
         properties.Persistent = true;
         properties.ContentType = contentType;
         
-        // Publicar usando exchange e routing key
         _channel.BasicPublish(exchangeName, routingKey, properties, body);
     }
 
