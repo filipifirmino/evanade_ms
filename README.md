@@ -1,6 +1,6 @@
 ﻿# Avanade Challenge - Microservices Architecture
 
-Sistema de microsserviços para gestão de inventário e vendas com API Gateway, implementado seguindo Clean Architecture, padrões de comunicação assíncrona, e **100% de cobertura de testes** com CI/CD automatizado.
+Sistema de microsserviços para gestão de inventário e vendas com API Gateway, implementado seguindo Clean Architecture, padrões de comunicação assíncrona e com CI/CD automatizado.
 
 ## 🏗️ Arquitetura
 
@@ -165,7 +165,7 @@ public class Order
 ## 🧪 Testes e Cobertura de Código
 
 ### ✅ Status dos Testes
-- **APIGateway**: 98 testes unitários e de integração (100% aprovados) ✅
+- **APIGateway**: 98 testes unitários e de integração ✅
 - **Inventory**: Testes unitários e de integração ✅
 - **Sales**: Testes unitários e de integração ✅
 
@@ -196,7 +196,7 @@ reportgenerator -reports:"./TestResults/**/coverage.cobertura.xml" -targetdir:".
 
 ### 🎯 Cobertura por Projeto
 
-**APIGateway (98 testes - 100% passando)**
+**APIGateway **
 - Entities: User, RateLimitePolicy, ServiceRoute
 - DTOs: LoginRequest
 - Services: AuthService, JwtTokenService
@@ -304,7 +304,6 @@ reportgenerator -reports:"./TestResults/**/coverage.cobertura.xml" -targetdir:".
 Este projeto implementa uma **arquitetura de microsserviços completa** com:
 
 ### ✅ **Qualidade e Confiabilidade**
-- **100% de cobertura de testes** no APIGateway (98 testes aprovados)
 - **CI/CD automatizado** com GitHub Actions
 - **Relatórios de cobertura** automáticos em HTML
 - **Testes unitários e de integração** em todos os projetos
@@ -323,5 +322,5 @@ Este projeto implementa uma **arquitetura de microsserviços completa** com:
 
 ---
 
-> **Avanade Challenge** - Arquitetura de microsserviços com Clean Architecture, comunicação assíncrona, padrões de resiliência e **100% de cobertura de testes** com CI/CD automatizado.
+> **Avanade Challenge** - Arquitetura de microsserviços com Clean Architecture, comunicação assíncrona, padrões de resiliência e com CI/CD automatizado.
 
